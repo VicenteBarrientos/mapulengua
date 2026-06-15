@@ -23,7 +23,7 @@ export function TopBar() {
           className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-terracotta/30 bg-cream"
           aria-label="Mochila"
         >
-          <KumeGame size={40} emotion="happy" action="idle" />
+          <KumeGame size={40} emotion="happy" action="idle" navAvatar />
         </Link>
 
         {loaded ? (
@@ -86,15 +86,17 @@ export function BottomNav() {
 export function AppShell({
   children,
   hideNav = false,
+  hideTopBar = false,
   fullBleed = false,
 }: {
   children: React.ReactNode;
   hideNav?: boolean;
+  hideTopBar?: boolean;
   fullBleed?: boolean;
 }) {
   return (
     <div className="flex min-h-dvh flex-col bg-cream">
-      <TopBar />
+      {!hideTopBar && <TopBar />}
       <main
         className={`mx-auto w-full max-w-lg flex-1 ${fullBleed ? "" : "px-4 pb-4"} ${hideNav ? "" : "pb-2"}`}
       >

@@ -23,8 +23,8 @@ export type KumeHeroProps = {
   priority?: boolean;
 };
 
-const HERO_ASSET = "/kume/kume.png";
-const ASPECT = 880 / 1152; // PNG proportions
+const HERO_ASSET = "/kume/kume-transparent.png";
+const ASPECT = 337 / 443;
 
 const ANIM_CLASS: Record<KumeHeroAnimation, string> = {
   idle: "kume-hero-act-float",

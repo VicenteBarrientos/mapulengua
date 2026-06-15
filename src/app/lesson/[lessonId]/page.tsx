@@ -1,22 +1,26 @@
 "use client";
 
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use, useCallback, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { LinkButton } from "@/components/ui/Button";
-import { HeartsDisplay } from "@/components/ui/Stats";
 import { ExerciseRenderer } from "@/components/exercises/ExerciseRenderer";
 import {
   LessonFeedbackBar,
-  SegmentedProgress,
+  LessonHeader,
 } from "@/components/lesson/LessonUI";
 import { KumeHero } from "@/components/kume/KumeHero";
 import { KumeLessonComplete } from "@/components/kume/KumeScenes";
-import { getLesson, getNextLesson } from "@/lib/data/regions";
+import { getLesson, getNextLesson, regions } from "@/lib/data/regions";
 import { useProgress } from "@/lib/store/progress";
-import { playComplete, playHeartLost, playMistake, playSuccess, playUnlock, playXp } from "@/lib/sounds";
-import { regions } from "@/lib/data/regions";
+import {
+  playComplete,
+  playHeartLost,
+  playMistake,
+  playSuccess,
+  playUnlock,
+  playXp,
+} from "@/lib/sounds";
 import { XP_PER_CORRECT } from "@/lib/types";
 import type { Exercise } from "@/lib/types";
 
@@ -99,7 +103,7 @@ export default function LessonPage({
   if (finished) {
     const totalXp = sessionXp + lesson.xpReward;
     return (
-      <AppShell hideNav>
+      <AppShell hideNav hideTopBar>
         <div className="flex min-h-[85dvh] flex-col items-center justify-center px-4 py-8 text-center animate-celebrate">
           <KumeLessonComplete size={160} />
           <p className="text-xs font-extrabold uppercase tracking-widest text-teal">
@@ -142,7 +146,7 @@ export default function LessonPage({
 
   if (progress.hearts === 0 && answered && !lastCorrect) {
     return (
-      <AppShell hideNav>
+      <AppShell hideNav hideTopBar>
         <div className="flex min-h-[85dvh] flex-col items-center justify-center px-4 text-center">
           <KumeHero emotion="thinking" animation="float" size={140} className="mb-4" />
           <h1 className="mb-2 text-xl font-extrabold">Necesitas descansar</h1>
@@ -158,27 +162,18 @@ export default function LessonPage({
   }
 
   return (
-    <AppShell hideNav>
-      <div className="flex min-h-[100dvh] flex-col pb-40">
-        <div className="px-4 pt-3">
-          <div className="mb-3 flex items-center gap-3">
-            <Link
-              href={`/region/${region.id}`}
-              className="text-lg font-bold text-earth-muted"
-            >
-              ✕
-            </Link>
-            <div className="flex-1">
-              <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-teal">
-                {region.name} · {lesson.title}
-              </p>
-              <SegmentedProgress total={total} current={step} answered={answered} />
-            </div>
-            <HeartsDisplay hearts={progress.hearts} maxHearts={progress.maxHearts} />
-          </div>
-        </div>
+    <AppShell hideNav hideTopBar fullBleed>
+      <div className={`lesson-shell ${answered ? "lesson-shell--feedback" : ""}`}>
+        <LessonHeader
+          regionName={region.name}
+          lessonTitle={lesson.title}
+          closeHref={`/region/${region.id}`}
+          total={total}
+          current={step}
+          answered={answered}
+        />
 
-        <div className="flex flex-1 flex-col px-4 pt-2">
+        <div className="lesson-body">
           {exercise && (
             <ExerciseRenderer
               key={exercise.id}

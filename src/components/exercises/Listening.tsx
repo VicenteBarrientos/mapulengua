@@ -3,12 +3,25 @@
 import { useCallback, useState } from "react";
 import type { ListeningExercise } from "@/lib/types";
 import { playTap } from "@/lib/sounds";
+import { lessonAnswerClass, type LessonAnswerState } from "@/components/lesson/lessonStyles";
 
 type Props = {
   exercise: ListeningExercise;
   onAnswer: (correct: boolean) => void;
   disabled?: boolean;
 };
+
+function optionState(
+  revealed: boolean,
+  index: number,
+  selected: number | null,
+  correctIndex: number
+): LessonAnswerState {
+  if (!revealed) return "default";
+  if (index === correctIndex) return "correct";
+  if (index === selected) return "wrong";
+  return "dimmed";
+}
 
 export function Listening({ exercise, onAnswer, disabled }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
@@ -37,48 +50,34 @@ export function Listening({ exercise, onAnswer, disabled }: Props) {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <p className="mb-2 text-xs font-extrabold uppercase tracking-widest text-terracotta">
-        {exercise.instruction}
-      </p>
+    <div className="lesson-exercise">
+      <p className="lesson-instruction">{exercise.instruction}</p>
 
-      <div className="mb-8 flex flex-col items-center py-6">
+      <div className="lesson-listen-wrap">
         <button
           type="button"
           onClick={playAudio}
           disabled={playing}
-          className={`flex h-24 w-24 items-center justify-center rounded-full border-4 border-terracotta bg-terracotta/10 text-4xl shadow-lg transition-transform active:scale-95 ${playing ? "animate-pulse-soft" : ""}`}
+          className={`lesson-listen-btn ${playing ? "animate-pulse-soft" : ""}`}
           aria-label="Reproducir audio"
         >
           🔊
         </button>
-        <p className="mt-4 text-sm font-semibold text-earth-muted">
-          Toca para escuchar
-        </p>
+        <p className="lesson-listen-hint">Toca para escuchar</p>
       </div>
 
-      <div className="mt-auto grid grid-cols-2 gap-3">
-        {exercise.options.map((option, i) => {
-          let style =
-            "border-2 border-sand-dark bg-white active:scale-[0.97] shadow-sm";
-          if (revealed && i === exercise.correctIndex) {
-            style = "border-2 border-sage bg-sage text-white";
-          } else if (revealed && i === selected && i !== exercise.correctIndex) {
-            style = "border-2 border-coral bg-coral/15 animate-shake";
-          }
-
-          return (
-            <button
-              key={i}
-              type="button"
-              disabled={disabled || revealed}
-              onClick={() => handleSelect(i)}
-              className={`min-h-[56px] rounded-2xl px-4 py-3 text-sm font-bold ${style}`}
-            >
-              {option}
-            </button>
-          );
-        })}
+      <div className="lesson-answers lesson-answers--grid-2">
+        {exercise.options.map((option, i) => (
+          <button
+            key={i}
+            type="button"
+            disabled={disabled || revealed}
+            onClick={() => handleSelect(i)}
+            className={lessonAnswerClass(optionState(revealed, i, selected, exercise.correctIndex))}
+          >
+            {option}
+          </button>
+        ))}
       </div>
     </div>
   );

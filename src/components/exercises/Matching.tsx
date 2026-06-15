@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import type { MatchingExercise } from "@/lib/types";
+import { lessonMatchClass } from "@/components/lesson/lessonStyles";
 
 type Props = {
   exercise: MatchingExercise;
@@ -70,35 +71,30 @@ export function Matching({ exercise, onAnswer, onMiss, disabled }: Props) {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <p className="mb-2 text-xs font-extrabold uppercase tracking-widest text-terracotta">
-        {exercise.instruction}
-      </p>
-      <p className="mb-6 text-center text-lg font-bold text-charcoal">
-        Toca una palabra y luego su pareja
-      </p>
+    <div className="lesson-exercise">
+      <p className="lesson-instruction">{exercise.instruction}</p>
+      <p className="lesson-prompt text-lg">Toca una palabra y luego su pareja</p>
 
-      <div className="grid flex-1 grid-cols-2 gap-3 content-start">
+      <div className="grid flex-1 grid-cols-2 gap-2.5 content-start">
         <div className="space-y-2">
           {exercise.pairs.map((pair) => {
             const isMatched = matched.has(pair.id);
             const isSelected = selectedLeft === pair.id;
             const isWrong = wrongId === pair.id;
+            const kind = isMatched
+              ? "matched"
+              : isWrong
+                ? "wrong"
+                : isSelected
+                  ? "selected"
+                  : "idle";
             return (
               <button
                 key={pair.id}
                 type="button"
                 disabled={disabled || isMatched || done}
                 onClick={() => handleLeft(pair.id)}
-                className={`min-h-[52px] w-full rounded-2xl border-2 px-3 py-3 text-sm font-bold transition-all active:scale-[0.97] ${
-                  isMatched
-                    ? "border-sage/40 bg-sage/15 text-sage opacity-70"
-                    : isWrong
-                      ? "border-coral bg-coral/15 animate-shake"
-                      : isSelected
-                        ? "border-terracotta bg-terracotta/10 shadow-md"
-                        : "border-sand-dark bg-white"
-                }`}
+                className={lessonMatchClass(kind)}
               >
                 {pair.left}
               </button>
@@ -109,19 +105,18 @@ export function Matching({ exercise, onAnswer, onMiss, disabled }: Props) {
           {rights.map((text) => {
             const pairId = exercise.pairs.find((p) => p.right === text)?.id ?? "";
             const isMatched = matched.has(pairId);
+            const kind = isMatched
+              ? "matched"
+              : selectedLeft
+                ? "idle"
+                : "disabled";
             return (
               <button
                 key={text}
                 type="button"
                 disabled={disabled || isMatched || done || !selectedLeft}
                 onClick={() => handleRight(text)}
-                className={`min-h-[52px] w-full rounded-2xl border-2 px-3 py-3 text-sm font-bold transition-all active:scale-[0.97] ${
-                  isMatched
-                    ? "border-sage/40 bg-sage/15 text-sage opacity-70"
-                    : selectedLeft
-                      ? "border-sand-dark bg-white hover:border-terracotta"
-                      : "border-sand-dark/60 bg-sand/30 text-earth-muted"
-                }`}
+                className={lessonMatchClass(kind)}
               >
                 {text}
               </button>

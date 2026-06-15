@@ -4,6 +4,7 @@ import type { KumeEmotion } from "./tokens";
 import { EMOTION_LABELS } from "./tokens";
 import { KumeSvgArt } from "./KumeSvgArt";
 import { useKumeLife } from "./useKumeLife";
+import { useKumeNavMicroFlap } from "./useKumeNavMicroFlap";
 
 export type KumeAction =
   | "idle"
@@ -18,6 +19,8 @@ export type KumeGameProps = {
   size?: number;
   action?: KumeAction;
   speaking?: boolean;
+  /** Top-bar nav avatar — subtle random wing micro-flap only */
+  navAvatar?: boolean;
   className?: string;
 };
 
@@ -51,11 +54,13 @@ export function KumeGame({
   size = 72,
   action,
   speaking = false,
+  navAvatar = false,
   className = "",
 }: KumeGameProps) {
   const resolvedAction = action ?? defaultAction(emotion);
+  const microFlap = useKumeNavMicroFlap(navAvatar);
   const { blinking, talkFrame } = useKumeLife(speaking, true);
-  const aspect = 200 / 280;
+  const aspect = 200 / 240;
   const height = size;
   const width = Math.round(size * aspect);
 
@@ -65,7 +70,7 @@ export function KumeGame({
       aria-label={`Küme, ${EMOTION_LABELS[emotion]}`}
       data-emotion={emotion}
       data-action={resolvedAction}
-      className={`kume-character kume-game ${ACTION_CLASS[resolvedAction]} kume-emotion-${emotion} ${className}`}
+      className={`kume-character kume-game ${ACTION_CLASS[resolvedAction]} kume-emotion-${emotion}${navAvatar ? " kume-nav-avatar" : ""}${microFlap ? " kume-nav-micro-flap" : ""} ${className}`}
       style={{ width, height, minWidth: width, minHeight: height }}
     >
       <div className="kume-character-inner">

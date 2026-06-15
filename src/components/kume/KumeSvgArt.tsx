@@ -6,36 +6,33 @@ type Props = {
   emotion: string;
 };
 
-/** Mapuche ñimin diamond pattern for headband / poncho trim */
-function NiminPattern({
-  x,
-  y,
-  w,
-  h,
-  stroke = C.ponchoBorder,
-}: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  stroke?: string;
-}) {
-  const step = w / 5;
+/** Zigzag ñimin trim — white diamonds on terracotta */
+function NiminTrim({ x, y, w, count = 6 }: { x: number; y: number; w: number; count?: number }) {
+  const step = w / count;
   return (
-    <g stroke={stroke} strokeWidth="1.4" fill="none">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <path
-          key={i}
-          d={`M${x + i * step} ${y + h / 2} L${x + i * step + step / 2} ${y} L${x + i * step + step} ${y + h / 2} L${x + i * step + step / 2} ${y + h} Z`}
-        />
-      ))}
+    <g>
+      {Array.from({ length: count }).map((_, i) => {
+        const cx = x + i * step + step / 2;
+        return (
+          <g key={i}>
+            <path
+              d={`M${cx - step * 0.22} ${y + 4} L${cx} ${y} L${cx + step * 0.22} ${y + 4} L${cx} ${y + 8} Z`}
+              fill={C.ponchoBorder}
+            />
+            <path
+              d={`M${cx - step * 0.1} ${y + 4} L${cx} ${y + 2} L${cx + step * 0.1} ${y + 4} L${cx} ${y + 6} Z`}
+              fill={C.ponchoPattern}
+            />
+          </g>
+        );
+      })}
     </g>
   );
 }
 
 /**
- * Game Küme — simplified vector for small interactive reactions.
- * Visually aligned with the official PNG: big eyes, big beak, ruff, poncho, medallion.
+ * Game Küme — flat vector matched to kume-game-reference.png
+ * Two legs, big eyes, raised wings, terracotta poncho, headband, cream ruff.
  */
 export function KumeSvgArt({ blinking, talkOpen, emotion }: Props) {
   const sad = emotion === "sad";
@@ -47,154 +44,128 @@ export function KumeSvgArt({ blinking, talkOpen, emotion }: Props) {
 
   return (
     <svg
-      viewBox="0 0 200 280"
+      viewBox="0 0 200 240"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="kume-svg h-full w-full overflow-visible"
       aria-hidden
     >
-      {/* Back wing */}
-      <g className={`kume-wing-back ${thinking ? "kume-wing-thinking" : ""}`}>
-        <path
-          d="M34 142 C18 118 12 92 22 72 C32 54 48 64 56 82 C62 98 58 118 52 134 C46 146 40 148 34 142Z"
-          fill={C.feather}
-        />
-        <path
-          d="M26 128 C20 112 18 96 24 84 C30 72 40 78 46 92 C50 104 46 120 40 128Z"
-          fill={C.wingTip}
-        />
+      {/* Ground shadow */}
+      <ellipse cx="100" cy="232" rx="36" ry="5" fill={C.shadow} opacity="0.35" />
+
+      {/* ── Raised wings (behind body) ── */}
+      <g className={`kume-wing-l ${thinking ? "kume-wing-thinking-l" : ""}`}>
+        <path d="M48 118 L26 50 L40 44 L58 68 L72 108 Z" fill={C.feather} />
+        <path d="M44 108 L32 68 L52 82 L62 106 Z" fill={C.neckRuff} />
+      </g>
+      <g className={`kume-wing-r ${excited ? "kume-wing-flap-r" : ""}`}>
+        <path d="M152 118 L174 50 L160 44 L142 68 L128 108 Z" fill={C.feather} />
+        <path d="M156 108 L168 68 L148 82 L138 106 Z" fill={C.neckRuff} />
       </g>
 
-      {/* Body */}
-      <g className="kume-torso">
-        <ellipse cx="100" cy="178" rx="44" ry="50" fill={C.feather} />
-        <ellipse cx="100" cy="172" rx="36" ry="38" fill={C.featherSoft} opacity="0.35" />
-        {/* Legs */}
-        <path d="M76 218 L70 252 L84 252 L88 222Z" fill={C.beak} />
-        <path d="M100 222 L96 254 L112 254 L114 224Z" fill={C.beak} />
-        <path d="M124 218 L120 252 L134 252 L128 222Z" fill={C.beak} />
-        <path d="M70 252 L66 258 L88 258 L84 252Z" fill={C.talon} />
-        <path d="M96 254 L92 260 L112 260 L112 254Z" fill={C.talon} />
-        <path d="M120 252 L116 258 L138 258 L134 252Z" fill={C.talon} />
+      {/* ── Lower body ── */}
+      <ellipse cx="100" cy="168" rx="38" ry="34" fill={C.feather} className="kume-game-body" />
+
+      {/* ── Two legs + flat feet ── */}
+      <g className="kume-legs">
+        <rect x="86" y="188" width="8" height="28" rx="2" fill={C.beak} />
+        <rect x="106" y="188" width="8" height="28" rx="2" fill={C.beak} />
+        <path d="M80 214 L98 214 L94 224 L82 224 Z" fill={C.talon} />
+        <path d="M102 214 L120 214 L118 224 L104 224 Z" fill={C.talon} />
       </g>
 
-      {/* Poncho — terracotta with ñimin border */}
+      {/* ── Poncho ── */}
       <g className="kume-poncho">
-        <path
-          d="M52 138 L100 122 L148 138 L142 192 L100 204 L58 192 Z"
-          fill={C.poncho}
-        />
-        <path
-          d="M58 138 L100 126 L142 138"
-          stroke={C.ponchoDark}
-          strokeWidth="2"
-          fill="none"
-        />
-        <NiminPattern x={58} y={178} w={84} h={10} stroke={C.ponchoBorder} />
-        <NiminPattern x={58} y={188} w={84} h={8} stroke={C.ponchoPattern} />
-        {/* Medallion / kultrun */}
-        <circle cx="100" cy="158" r="16" fill={C.medallion} />
-        <circle cx="100" cy="158" r="12" fill={C.medallionInner} opacity="0.55" />
-        <circle cx="100" cy="158" r="8" fill="none" stroke={C.ponchoDark} strokeWidth="1.2" />
+        <path d="M54 128 L100 112 L146 128 L140 182 L100 192 L60 182 Z" fill={C.poncho} />
+        {/* Gold wheel emblem */}
+        <circle cx="100" cy="152" r="14" fill={C.medallion} />
         {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
           const rad = (deg * Math.PI) / 180;
           return (
             <line
               key={deg}
-              x1={100 + Math.cos(rad) * 4}
-              y1={158 + Math.sin(rad) * 4}
-              x2={100 + Math.cos(rad) * 11}
-              y2={158 + Math.sin(rad) * 11}
+              x1={100 + Math.cos(rad) * 3}
+              y1={152 + Math.sin(rad) * 3}
+              x2={100 + Math.cos(rad) * 12}
+              y2={152 + Math.sin(rad) * 12}
               stroke={C.ponchoDark}
-              strokeWidth="1.2"
+              strokeWidth="2"
+              strokeLinecap="round"
             />
           );
         })}
+        <circle cx="100" cy="152" r="3" fill={C.ponchoDark} />
+        <NiminTrim x={58} y={176} w={84} count={7} />
       </g>
 
-      {/* Cream neck ruff — prominent */}
-      <ellipse cx="100" cy="124" rx="40" ry="16" fill={C.neckRuff} />
-      <ellipse cx="100" cy="120" rx="34" ry="12" fill={C.neckRuffLight} />
-      <ellipse cx="88" cy="126" rx="8" ry="5" fill={C.neckRuffLight} opacity="0.6" />
-      <ellipse cx="112" cy="126" rx="8" ry="5" fill={C.neckRuffLight} opacity="0.6" />
+      {/* ── Cream neck ruff ── */}
+      <ellipse cx="100" cy="118" rx="36" ry="14" fill={C.neckRuff} />
+      <ellipse cx="100" cy="115" rx="30" ry="10" fill={C.neckRuffLight} />
 
-      {/* Head */}
+      {/* ── Head ── */}
       <g
         className={`kume-head ${sad ? "kume-head-sad" : ""} ${thinking ? "kume-head-thinking" : ""}`}
       >
-        <ellipse cx="100" cy="72" rx="42" ry="40" fill={C.feather} />
-        {/* Cheek fluff */}
-        <ellipse cx="68" cy="78" rx="10" ry="8" fill={C.featherSoft} />
-        <ellipse cx="132" cy="78" rx="10" ry="8" fill={C.featherSoft} />
+        <circle cx="100" cy="68" r="40" fill={C.feather} />
 
         {/* Trarilonko headband */}
-        <rect x="60" y="44" width="80" height="14" rx="3" fill={C.trarilonko} />
-        <NiminPattern x={62} y={46} w={76} h={10} stroke={C.ponchoBorder} />
-        <NiminPattern x={62} y={48} w={76} h={6} stroke={C.poncho} />
+        <rect x="62" y="38" width="76" height="14" rx="2" fill={C.poncho} />
+        <NiminTrim x={64} y={40} w={72} count={6} />
         {/* Crown feathers */}
-        <path d="M124 42 L130 32 L134 44" fill={C.feather} />
-        <path d="M132 34 L138 28 L140 38" fill={C.neckRuff} />
+        <path d="M128 36 L134 24 L138 38 Z" fill={C.feather} />
+        <path d="M136 28 L142 22 L144 34 Z" fill={C.neckRuff} />
+        <path d="M136 28 L142 22 L140 30 Z" fill={C.feather} opacity="0.5" />
 
-        {/* Eyes — large & expressive */}
+        {/* Big dark eyes with shiny highlights (reference style) */}
         <g className={`kume-eyes ${proud ? "kume-eyes-proud" : ""} ${sad ? "kume-eyes-sad" : ""}`}>
-          <ellipse cx="82" cy="74" rx="14" ry="15" fill={C.eyeWhite} />
-          <ellipse cx="118" cy="74" rx="14" ry="15" fill={C.eyeWhite} />
-          <circle cx="84" cy="76" r="8" fill={C.eyeBrown} />
-          <circle cx="120" cy="76" r="8" fill={C.eyeBrown} />
-          <circle cx="86" cy="73" r="3.5" fill={C.eyeHighlight} />
-          <circle cx="122" cy="73" r="3.5" fill={C.eyeHighlight} />
-          <circle cx="81" cy="78" r="1.5" fill={C.eyeHighlight} opacity="0.7" />
-          <circle cx="117" cy="78" r="1.5" fill={C.eyeHighlight} opacity="0.7" />
-          <ellipse cx="82" cy="74" rx="15" ry={blinking ? 15 : 0} fill={C.feather} />
-          <ellipse cx="118" cy="74" rx="15" ry={blinking ? 15 : 0} fill={C.feather} />
-          {proud && (
+          {!blinking && !proud && !sad && (
             <>
-              <path d="M68 72 Q82 64 96 72" stroke={C.feather} strokeWidth="3.5" fill="none" />
-              <path d="M104 72 Q118 64 132 72" stroke={C.feather} strokeWidth="3.5" fill="none" />
+              <circle cx="82" cy="70" r="14" fill={C.eyeBrown} />
+              <circle cx="118" cy="70" r="14" fill={C.eyeBrown} />
+              <circle cx="86" cy="66" r="4" fill={C.eyeHighlight} />
+              <circle cx="122" cy="66" r="4" fill={C.eyeHighlight} />
+              <circle cx="79" cy="73" r="2" fill={C.eyeHighlight} />
+              <circle cx="115" cy="73" r="2" fill={C.eyeHighlight} />
             </>
           )}
-          {sad && (
+          {blinking && (
             <>
-              <path d="M70 70 Q82 78 94 70" stroke={C.feather} strokeWidth="3" fill="none" />
-              <path d="M106 70 Q118 78 130 70" stroke={C.feather} strokeWidth="3" fill="none" />
+              <path d="M68 70 H96" stroke={C.featherSoft} strokeWidth="5" strokeLinecap="round" />
+              <path d="M104 70 H132" stroke={C.featherSoft} strokeWidth="5" strokeLinecap="round" />
+            </>
+          )}
+          {proud && !blinking && (
+            <>
+              <path d="M69 68 Q82 60 95 68" stroke={C.feather} strokeWidth="3.5" fill="none" />
+              <path d="M105 68 Q118 60 131 68" stroke={C.feather} strokeWidth="3.5" fill="none" />
+            </>
+          )}
+          {sad && !blinking && (
+            <>
+              <path d="M70 66 Q82 74 94 66" stroke={C.feather} strokeWidth="3" fill="none" />
+              <path d="M106 66 Q118 74 130 66" stroke={C.feather} strokeWidth="3" fill="none" />
             </>
           )}
         </g>
 
-        {/* Beak — large hooked */}
-        <g className="kume-beak" transform="translate(100, 94)">
+        {/* Simple open beak + tongue */}
+        <g className="kume-beak" transform="translate(100, 86)">
+          <path d="M-12 -2 L0 -10 L12 -2 L0 2 Z" fill={C.beak} className="kume-beak-upper" />
           <path
-            d="M-18 -6 C-8 -14 8 -14 18 -6 C14 -2 8 2 0 2 C-8 2 -14 -2 -18 -6Z"
-            fill={C.beak}
-          />
-          <path d="M-12 -4 C0 -10 12 -4 12 -4 L0 0 Z" fill={C.beakLight} opacity="0.35" />
-          <path
-            d="M-14 2 C-6 12 6 12 14 2 C8 6 0 8 -8 6 C-12 4 -14 2 -14 2Z"
-            fill={C.beakDark}
+            d="M-10 2 L0 10 L10 2 Z"
+            fill={beakOpen ? C.beak : C.beakDark}
             className={`kume-beak-lower ${beakOpen ? "kume-beak-open" : ""} ${talkOpen ? "kume-beak-talking" : ""}`}
           />
           {beakOpen && (
-            <path d="M-10 4 Q0 10 10 4 Q0 7 -10 4Z" fill="#7a3535" opacity="0.75" />
+            <ellipse cx="0" cy="5" rx="4" ry="2.5" fill={C.tongue} className="kume-tongue" />
           )}
         </g>
-      </g>
-
-      {/* Front wing (wave) */}
-      <g className={`kume-wing-front ${excited ? "kume-wing-flap" : ""}`}>
-        <path
-          d="M148 132 C168 108 178 82 172 58 C166 38 148 48 138 68 C130 88 134 112 140 128 C146 142 154 146 148 132Z"
-          fill={C.feather}
-        />
-        <path
-          d="M158 118 C170 98 176 78 170 62 C164 48 152 56 146 72 C142 86 146 104 152 116Z"
-          fill={C.wingTip}
-        />
       </g>
 
       {excited && (
         <>
-          <circle cx="162" cy="42" r="3.5" fill={C.sparkle} className="kume-sparkle kume-sparkle-a" />
-          <circle cx="38" cy="50" r="3" fill={C.sparkle} className="kume-sparkle kume-sparkle-b" />
+          <circle cx="158" cy="36" r="3" fill={C.sparkle} className="kume-sparkle kume-sparkle-a" />
+          <circle cx="42" cy="40" r="2.5" fill={C.sparkle} className="kume-sparkle kume-sparkle-b" />
         </>
       )}
     </svg>

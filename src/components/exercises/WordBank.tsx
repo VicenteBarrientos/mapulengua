@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { WordBankExercise } from "@/lib/types";
 import { playTap } from "@/lib/sounds";
+import { lessonAnswerClass } from "@/components/lesson/lessonStyles";
 
 type Props = {
   exercise: WordBankExercise;
@@ -31,6 +32,9 @@ export function WordBank({ exercise, onAnswer, disabled }: Props) {
   const [picked, setPicked] = useState<string[]>([]);
   const [revealed, setRevealed] = useState(false);
 
+  const isCorrect =
+    revealed && normalize(picked.join(" ")) === normalize(exercise.answer);
+
   function tap(tile: string) {
     if (disabled || revealed) return;
     playTap();
@@ -54,53 +58,41 @@ export function WordBank({ exercise, onAnswer, disabled }: Props) {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <p className="mb-2 text-xs font-extrabold uppercase tracking-widest text-terracotta">
-        {exercise.instruction}
-      </p>
-      <p className="mb-6 text-center text-xl font-extrabold text-charcoal">{exercise.prompt}</p>
+    <div className="lesson-exercise">
+      <p className="lesson-instruction">{exercise.instruction}</p>
+      <p className="lesson-prompt">{exercise.prompt}</p>
 
       <div
-        className={`mb-6 flex min-h-[56px] flex-wrap items-center justify-center gap-2 rounded-2xl border-2 px-4 py-4 ${
-          revealed
-            ? picked.join(" ").toLowerCase() === exercise.answer.toLowerCase()
-              ? "border-sage bg-sage/10"
-              : "border-coral bg-coral/10"
-            : "border-sand-dark bg-white"
-        }`}
+        className={`lesson-slot ${revealed ? (isCorrect ? "lesson-slot--correct" : "lesson-slot--wrong") : ""}`}
       >
         {picked.length > 0 ? (
           picked.map((t, i) => (
-            <span key={i} className="rounded-lg bg-terracotta/15 px-3 py-1 text-lg font-bold text-teal">
+            <span key={i} className="lesson-tile">
               {t}
             </span>
           ))
         ) : (
-          <span className="text-earth-muted">Toca las palabras…</span>
+          <span className="text-sm font-semibold text-earth-muted">Toca las palabras…</span>
         )}
       </div>
 
       {!revealed && (
         <>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="lesson-answers lesson-answers--grid-2">
             {tiles.map((tile) => (
               <button
                 key={tile}
                 type="button"
                 disabled={disabled || picked.includes(tile)}
                 onClick={() => tap(tile)}
-                className="min-h-[52px] rounded-2xl border-2 border-sand-dark bg-white text-base font-bold active:scale-95 disabled:opacity-40"
+                className={lessonAnswerClass("default", picked.includes(tile) ? "opacity-40" : "")}
               >
                 {tile}
               </button>
             ))}
           </div>
           {picked.length > 0 && (
-            <button
-              type="button"
-              onClick={resetPick}
-              className="mt-3 text-sm font-bold text-teal"
-            >
+            <button type="button" onClick={resetPick} className="text-sm font-bold text-teal">
               Borrar selección
             </button>
           )}
