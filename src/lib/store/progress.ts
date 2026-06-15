@@ -81,6 +81,14 @@ export function useProgress() {
     });
   }, []);
 
+  const addXp = useCallback((amount: number) => {
+    setProgress((prev) => {
+      const next = { ...prev, xp: prev.xp + amount };
+      saveProgress(next);
+      return next;
+    });
+  }, []);
+
   const completeLesson = useCallback(
     (lessonId: string, score: number, xpReward: number) => {
       setProgress((prev) => {
@@ -126,6 +134,7 @@ export function useProgress() {
     loaded,
     recordActivity,
     loseHeart,
+    addXp,
     completeLesson,
     isLessonCompleted,
     getUnitProgress,

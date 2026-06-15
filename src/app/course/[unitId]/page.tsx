@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
+import { resolveRegionId } from "@/lib/data/regions";
 
-export default async function CoursePage({
+export default async function CourseRedirect({
   params,
 }: {
   params: Promise<{ unitId: string }>;
 }) {
-  await params;
-  redirect("/");
+  const { unitId } = await params;
+  redirect(`/region/${resolveRegionId(unitId)}`);
 }

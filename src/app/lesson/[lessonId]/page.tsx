@@ -4,12 +4,26 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use, useCallback, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { Button, LinkButton } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/Button";
 import { HeartsDisplay } from "@/components/ui/Stats";
 import { ExerciseRenderer } from "@/components/exercises/ExerciseRenderer";
+import {
+  LessonFeedbackBar,
+  SegmentedProgress,
+} from "@/components/lesson/LessonUI";
 import { Kume } from "@/components/kume/Kume";
-import { getLesson, getNextLesson } from "@/lib/data/units";
+import { KumeLessonComplete } from "@/components/kume/KumeScenes";
+import { getLesson, getNextLesson } from "@/lib/data/regions";
 import { useProgress } from "@/lib/store/progress";
+import { playComplete, playHeartLost, playMistake, playSuccess, playUnlock, playXp } from "@/lib/sounds";
+import { regions } from "@/lib/data/regions";
+import { XP_PER_CORRECT } from "@/lib/types";
+import type { Exercise } from "@/lib/types";
+
+function getExplanation(exercise: Exercise): string | undefined {
+  if ("explanation" in exercise) return exercise.explanation;
+  return undefined;
+}
 
 export default function LessonPage({
   params,
@@ -18,73 +32,107 @@ export default function LessonPage({
 }) {
   const { lessonId } = use(params);
   const result = getLesson(lessonId);
-  const { progress, loseHeart, completeLesson, recordActivity } = useProgress();
+  const { progress, loseHeart, addXp, completeLesson, recordActivity, isLessonCompleted } =
+    useProgress();
 
-  const [exerciseIndex, setExerciseIndex] = useState(0);
+  const [step, setStep] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [sessionXp, setSessionXp] = useState(0);
   const [answered, setAnswered] = useState(false);
+  const [lastCorrect, setLastCorrect] = useState(false);
+  const [lastXp, setLastXp] = useState(0);
   const [finished, setFinished] = useState(false);
 
   if (!result) notFound();
 
-  const { unit, lesson } = result;
-  const exercise = lesson.exercises[exerciseIndex];
+  const { region, lesson } = result;
+  const exercise = lesson.exercises[step];
   const total = lesson.exercises.length;
-  const progressPct = ((exerciseIndex + (answered ? 1 : 0)) / total) * 100;
   const nextLesson = getNextLesson(lessonId);
 
   const handleAnswer = useCallback(
     (correct: boolean) => {
       setAnswered(true);
+      setLastCorrect(correct);
       if (correct) {
+        playSuccess();
+        playXp();
         setCorrectCount((c) => c + 1);
+        setLastXp(XP_PER_CORRECT);
+        setSessionXp((x) => x + XP_PER_CORRECT);
+        addXp(XP_PER_CORRECT);
       } else {
+        playMistake();
+        setLastXp(0);
         loseHeart();
+        playHeartLost();
       }
     },
-    [loseHeart]
+    [addXp, loseHeart]
   );
 
-  function handleContinue() {
-    if (progress.hearts === 0 && !answered) return;
+  const handleMiss = useCallback(() => {
+    loseHeart();
+    playHeartLost();
+  }, [loseHeart]);
 
-    if (exerciseIndex < total - 1) {
-      setExerciseIndex((i) => i + 1);
+  function handleContinue() {
+    if (step < total - 1) {
+      setStep((s) => s + 1);
       setAnswered(false);
     } else {
+      playComplete();
+      const isLastInRegion = region.lessons.every(
+        (l) => l.id === lessonId || isLessonCompleted(l.id)
+      );
       const score = Math.round((correctCount / total) * 100);
       completeLesson(lessonId, score, lesson.xpReward);
       recordActivity();
+      if (isLastInRegion) {
+        const nextStop = regions.find((r) => r.order === region.order + 1);
+        if (nextStop) playUnlock();
+      }
       setFinished(true);
     }
   }
 
   if (finished) {
-    const score = Math.round((correctCount / total) * 100);
+    const totalXp = sessionXp + lesson.xpReward;
     return (
       <AppShell hideNav>
-        <div className="flex flex-col items-center px-4 py-8 text-center animate-celebrate">
-          <Kume size={140} mood="celebrating" className="mb-6" />
-          <h1 className="mb-2 text-2xl font-extrabold text-terracotta">
-            ¡Lección completada!
-          </h1>
-          <p className="mb-1 text-earth-muted">{lesson.title}</p>
-          <p className="mb-6 text-lg font-extrabold text-gem">
-            +{lesson.xpReward} 💎 · {score}% aciertos
+        <div className="flex min-h-[85dvh] flex-col items-center justify-center px-4 py-8 text-center animate-celebrate">
+          <KumeLessonComplete size={160} />
+          <p className="text-xs font-extrabold uppercase tracking-widest text-teal">
+            {region.name}
           </p>
-
-          <div className="flex w-full flex-col gap-3">
+          <h1 className="mb-1 text-3xl font-extrabold text-terracotta">
+            ¡Parada completada!
+          </h1>
+          <p className="mb-6 text-earth-muted">{lesson.title}</p>
+          <div className="mb-8 flex gap-8">
+            <div>
+              <p className="text-2xl font-extrabold text-gem">+{totalXp}</p>
+              <p className="text-xs font-bold text-earth-muted">Recuerdos</p>
+            </div>
+            <div>
+              <p className="text-2xl font-extrabold text-sage">
+                {Math.round((correctCount / total) * 100)}%
+              </p>
+              <p className="text-xs font-bold text-earth-muted">Camino</p>
+            </div>
+          </div>
+          <div className="flex w-full max-w-sm flex-col gap-3">
             {nextLesson ? (
-              <LinkButton href={`/lesson/${nextLesson.id}`} fullWidth>
-                Siguiente lección
+              <LinkButton href={`/lesson/${nextLesson.id}`} fullWidth size="lg">
+                Siguiente parada →
               </LinkButton>
             ) : (
-              <LinkButton href="/" fullWidth>
-                Volver al camino
+              <LinkButton href={`/region/${region.id}`} fullWidth size="lg">
+                Explorar {region.name}
               </LinkButton>
             )}
             <LinkButton href="/" variant="outline" fullWidth>
-              Inicio
+              Ver la ruta
             </LinkButton>
           </div>
         </div>
@@ -92,17 +140,17 @@ export default function LessonPage({
     );
   }
 
-  if (progress.hearts === 0 && answered) {
+  if (progress.hearts === 0 && answered && !lastCorrect) {
     return (
       <AppShell hideNav>
-        <div className="flex flex-col items-center px-4 py-8 text-center">
-          <Kume size={120} mood="encouraging" className="mb-4" />
-          <h1 className="mb-2 text-xl font-extrabold text-charcoal">Sin vidas</h1>
+        <div className="flex min-h-[85dvh] flex-col items-center justify-center px-4 text-center">
+          <Kume size={120} emotion="thinking" animation="idle" className="mb-4" />
+          <h1 className="mb-2 text-xl font-extrabold">Necesitas descansar</h1>
           <p className="mb-6 text-sm text-earth-muted">
-            Küme te anima a descansar y volver mañana con energía renovada.
+            Küme te espera mañana con energía renovada para seguir al sur.
           </p>
-          <LinkButton href="/" fullWidth>
-            Volver al camino
+          <LinkButton href={`/region/${region.id}`} fullWidth>
+            Volver a {region.name}
           </LinkButton>
         </div>
       </AppShell>
@@ -111,48 +159,45 @@ export default function LessonPage({
 
   return (
     <AppShell hideNav>
-      <div className="px-4">
-        <div className="mb-4 flex items-center justify-between">
-          <Link href="/" className="text-sm font-bold text-teal">
-            ✕ Salir
-          </Link>
-          <HeartsDisplay hearts={progress.hearts} maxHearts={progress.maxHearts} />
-        </div>
-
-        <div className="mb-6">
-          <div className="mb-1 flex justify-between text-xs font-semibold text-earth-muted">
-            <span>
-              {unit.title} · {lesson.title}
-            </span>
-            <span>
-              {exerciseIndex + 1}/{total}
-            </span>
-          </div>
-          <div className="h-2.5 overflow-hidden rounded-full bg-sand">
-            <div
-              className="h-full rounded-full bg-terracotta transition-all duration-300"
-              style={{ width: `${progressPct}%` }}
-            />
+      <div className="flex min-h-[100dvh] flex-col pb-40">
+        <div className="px-4 pt-3">
+          <div className="mb-3 flex items-center gap-3">
+            <Link
+              href={`/region/${region.id}`}
+              className="text-lg font-bold text-earth-muted"
+            >
+              ✕
+            </Link>
+            <div className="flex-1">
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-teal">
+                {region.name} · {lesson.title}
+              </p>
+              <SegmentedProgress total={total} current={step} answered={answered} />
+            </div>
+            <HeartsDisplay hearts={progress.hearts} maxHearts={progress.maxHearts} />
           </div>
         </div>
 
-        <div className="mb-6 min-h-[280px] rounded-2xl border-2 border-sand-dark bg-white p-5 shadow-sm">
+        <div className="flex flex-1 flex-col px-4 pt-2">
           {exercise && (
             <ExerciseRenderer
               key={exercise.id}
               exercise={exercise}
               onAnswer={handleAnswer}
+              onMiss={handleMiss}
               disabled={progress.hearts === 0}
             />
           )}
         </div>
 
         {answered && (
-          <div className="sticky bottom-4 pb-4">
-            <Button fullWidth onClick={handleContinue} size="lg">
-              {exerciseIndex < total - 1 ? "Continuar" : "Finalizar lección"}
-            </Button>
-          </div>
+          <LessonFeedbackBar
+            correct={lastCorrect}
+            explanation={exercise ? getExplanation(exercise) : undefined}
+            xpGained={lastXp}
+            onContinue={handleContinue}
+            isLast={step >= total - 1}
+          />
         )}
       </div>
     </AppShell>

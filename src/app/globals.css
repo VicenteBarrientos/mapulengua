@@ -146,3 +146,184 @@ body {
 .animate-slide-up {
   animation: slide-up 0.35s ease-out;
 }
+
+@keyframes slide-up-feedback {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-feedback {
+  animation: slide-up-feedback 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-pop {
+  animation: pop 0.35s ease-out;
+}
+
+@keyframes xp-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(4px);
+  }
+  60% {
+    transform: scale(1.15) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-xp-pop {
+  animation: xp-pop 0.45s ease-out;
+}
+
+/* ── Küme mascot animations (design guide sprites) ── */
+
+.kume-root {
+  transform-origin: center bottom;
+}
+
+.kume-sprite {
+  transition: filter 0.2s ease;
+}
+
+@keyframes kume-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.kume-anim-idle {
+  animation: kume-float 3.2s ease-in-out infinite;
+}
+
+@keyframes kume-wing {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  25% {
+    transform: rotate(-2deg) translateY(-2px);
+  }
+  75% {
+    transform: rotate(2deg) translateY(-2px);
+  }
+}
+
+.kume-anim-wing {
+  animation: kume-wing 1.2s ease-in-out infinite;
+}
+
+@keyframes kume-celebrate {
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+  }
+  30% {
+    transform: scale(1.08) translateY(-8px);
+  }
+  60% {
+    transform: scale(1.04) translateY(-4px);
+  }
+}
+
+.kume-anim-celebrate {
+  animation: kume-celebrate 0.6s ease-out;
+}
+
+@keyframes kume-lesson-complete {
+  0% {
+    transform: scale(0.85) translateY(12px);
+    opacity: 0.6;
+  }
+  40% {
+    transform: scale(1.12) translateY(-12px);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.05) translateY(-6px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.kume-anim-lesson-complete {
+  animation: kume-lesson-complete 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes kume-heart-loss {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  20% {
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  40% {
+    transform: translateX(3px) rotate(2deg);
+  }
+  60% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
+}
+
+.kume-anim-heart-loss {
+  animation: kume-heart-loss 0.5s ease-in-out;
+}
+
+.kume-sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gem);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kume-sparkle-a {
+  top: 18%;
+  right: 12%;
+  animation: kume-sparkle 1.8s ease-in-out infinite;
+}
+
+.kume-sparkle-b {
+  top: 28%;
+  left: 8%;
+  animation: kume-sparkle 1.8s ease-in-out 0.6s infinite;
+}
+
+@keyframes kume-sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}

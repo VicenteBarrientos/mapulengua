@@ -5,13 +5,12 @@ import "./globals.css";
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito",
-  weight: ["400", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "Mapulengua — Aprende mapudungun",
+  title: "Mapulengua — Viaje por Chile",
   description:
-    "Aprende mapudungun desde el español con Küme, tu guía condor. Un camino respetuoso hacia la lengua mapuche.",
+    "Viaja por Chile con Küme y aprende mapudungun en cada región del camino sur.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

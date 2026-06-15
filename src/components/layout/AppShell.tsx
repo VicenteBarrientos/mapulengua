@@ -6,10 +6,10 @@ import { Kume } from "@/components/kume/Kume";
 import { useProgress } from "@/lib/store/progress";
 
 const tabs = [
-  { href: "/", label: "Aprender", icon: "🏔️" },
-  { href: "/review", label: "Repasar", icon: "📖" },
-  { href: "/leagues", label: "Ligas", icon: "🏆" },
-  { href: "/profile", label: "Perfil", icon: "👤" },
+  { href: "/", label: "Ruta", icon: "🗺️" },
+  { href: "/review", label: "Diario", icon: "📔" },
+  { href: "/leagues", label: "Huellas", icon: "👣" },
+  { href: "/profile", label: "Mochila", icon: "🎒" },
 ];
 
 export function TopBar() {
@@ -21,18 +21,18 @@ export function TopBar() {
         <Link
           href="/profile"
           className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-terracotta/30 bg-cream"
-          aria-label="Perfil"
+          aria-label="Mochila"
         >
-          <Kume size={40} mood="happy" />
+          <Kume size={40} emotion="happy" animation="idle" />
         </Link>
 
         {loaded ? (
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 font-bold text-charcoal">
+            <div className="flex items-center gap-1.5 font-bold text-charcoal" title="Días de viaje">
               <span className="text-xl">🔥</span>
               <span>{progress.streak}</span>
             </div>
-            <div className="flex items-center gap-1.5 font-bold text-gem">
+            <div className="flex items-center gap-1.5 font-bold text-gem" title="Recuerdos">
               <span className="text-xl">💎</span>
               <span>{progress.xp}</span>
             </div>
@@ -41,7 +41,7 @@ export function TopBar() {
           <div className="h-6 w-24 animate-pulse rounded-full bg-sand" />
         )}
 
-        <div className="flex h-10 w-10 items-center justify-center gap-0.5 font-bold text-coral" title="Vidas">
+        <div className="flex h-10 w-10 items-center justify-center gap-0.5 font-bold text-coral" title="Energía">
           <span className="text-lg">❤️</span>
           {loaded && <span className="text-sm">{progress.hearts}</span>}
         </div>
@@ -59,7 +59,10 @@ export function BottomNav() {
         {tabs.map((tab) => {
           const active =
             tab.href === "/"
-              ? pathname === "/" || pathname.startsWith("/course") || pathname.startsWith("/lesson")
+              ? pathname === "/" ||
+                pathname.startsWith("/region") ||
+                pathname.startsWith("/lesson") ||
+                pathname.startsWith("/course")
               : pathname.startsWith(tab.href);
 
           return (

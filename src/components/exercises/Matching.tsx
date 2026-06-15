@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { MatchingExercise } from "@/lib/types";
+
 type Props = {
   exercise: MatchingExercise;
   onAnswer: (correct: boolean) => void;
+  onMiss?: () => void;
   disabled?: boolean;
 };
 
@@ -17,17 +19,17 @@ function shuffle<T>(arr: T[]): T[] {
   return copy;
 }
 
-export function Matching({ exercise, onAnswer, disabled }: Props) {
+export function Matching({ exercise, onAnswer, onMiss, disabled }: Props) {
   const rights = useMemo(
     () => shuffle(exercise.pairs.map((p) => p.right)),
     [exercise.pairs]
   );
 
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
-  const [selectedRight, setSelectedRight] = useState<string | null>(null);
   const [matched, setMatched] = useState<Set<string>>(new Set());
-  const [wrongPair, setWrongPair] = useState(false);
+  const [wrongId, setWrongId] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const heartLost = useRef(false);
 
   function tryMatch(leftId: string, rightText: string) {
     if (disabled || done) return;
@@ -39,56 +41,63 @@ export function Matching({ exercise, onAnswer, disabled }: Props) {
       next.add(leftId);
       setMatched(next);
       setSelectedLeft(null);
-      setSelectedRight(null);
+      setWrongId(null);
       if (next.size === exercise.pairs.length) {
         setDone(true);
         onAnswer(true);
       }
     } else {
-      setWrongPair(true);
+      setWrongId(leftId);
+      if (!heartLost.current) {
+        heartLost.current = true;
+        onMiss?.();
+      }
       setTimeout(() => {
-        setWrongPair(false);
+        setWrongId(null);
         setSelectedLeft(null);
-        setSelectedRight(null);
-        onAnswer(false);
-      }, 600);
+      }, 500);
     }
   }
 
-  function handleLeftClick(id: string) {
+  function handleLeft(id: string) {
     if (matched.has(id)) return;
     setSelectedLeft(id);
-    if (selectedRight) tryMatch(id, selectedRight);
   }
 
-  function handleRightClick(text: string) {
-    if (matched.has(exercise.pairs.find((p) => p.right === text)?.id ?? "")) return;
-    setSelectedRight(text);
-    if (selectedLeft) tryMatch(selectedLeft, text);
+  function handleRight(text: string) {
+    if (!selectedLeft) return;
+    tryMatch(selectedLeft, text);
   }
 
   return (
-    <div className="space-y-4">
-      <p className="text-lg font-medium text-earth">{exercise.instruction}</p>
-      <div className="grid grid-cols-2 gap-3">
+    <div className="flex flex-1 flex-col">
+      <p className="mb-2 text-xs font-extrabold uppercase tracking-widest text-terracotta">
+        {exercise.instruction}
+      </p>
+      <p className="mb-6 text-center text-lg font-bold text-charcoal">
+        Toca una palabra y luego su pareja
+      </p>
+
+      <div className="grid flex-1 grid-cols-2 gap-3 content-start">
         <div className="space-y-2">
           {exercise.pairs.map((pair) => {
             const isMatched = matched.has(pair.id);
             const isSelected = selectedLeft === pair.id;
+            const isWrong = wrongId === pair.id;
             return (
               <button
                 key={pair.id}
                 type="button"
                 disabled={disabled || isMatched || done}
-                onClick={() => handleLeftClick(pair.id)}
-                className={`w-full rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all ${
+                onClick={() => handleLeft(pair.id)}
+                className={`min-h-[52px] w-full rounded-2xl border-2 px-3 py-3 text-sm font-bold transition-all active:scale-[0.97] ${
                   isMatched
-                    ? "border-sage/50 bg-sage/10 opacity-60"
-                    : isSelected
-                      ? "border-teal bg-teal/10"
-                      : wrongPair && isSelected
-                        ? "border-coral bg-coral/10 animate-shake"
-                        : "border-sand bg-white hover:border-teal/40"
+                    ? "border-sage/40 bg-sage/15 text-sage opacity-70"
+                    : isWrong
+                      ? "border-coral bg-coral/15 animate-shake"
+                      : isSelected
+                        ? "border-terracotta bg-terracotta/10 shadow-md"
+                        : "border-sand-dark bg-white"
                 }`}
               >
                 {pair.left}
@@ -100,19 +109,18 @@ export function Matching({ exercise, onAnswer, disabled }: Props) {
           {rights.map((text) => {
             const pairId = exercise.pairs.find((p) => p.right === text)?.id ?? "";
             const isMatched = matched.has(pairId);
-            const isSelected = selectedRight === text;
             return (
               <button
                 key={text}
                 type="button"
-                disabled={disabled || isMatched || done}
-                onClick={() => handleRightClick(text)}
-                className={`w-full rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all ${
+                disabled={disabled || isMatched || done || !selectedLeft}
+                onClick={() => handleRight(text)}
+                className={`min-h-[52px] w-full rounded-2xl border-2 px-3 py-3 text-sm font-bold transition-all active:scale-[0.97] ${
                   isMatched
-                    ? "border-sage/50 bg-sage/10 opacity-60"
-                    : isSelected
-                      ? "border-teal bg-teal/10"
-                      : "border-sand bg-white hover:border-teal/40"
+                    ? "border-sage/40 bg-sage/15 text-sage opacity-70"
+                    : selectedLeft
+                      ? "border-sand-dark bg-white hover:border-terracotta"
+                      : "border-sand-dark/60 bg-sand/30 text-earth-muted"
                 }`}
               >
                 {text}
@@ -121,11 +129,6 @@ export function Matching({ exercise, onAnswer, disabled }: Props) {
           })}
         </div>
       </div>
-      {done && (
-        <p className="rounded-xl bg-sage/10 px-4 py-3 text-sm text-sage">
-          ¡Excelente! Todas las parejas coinciden.
-        </p>
-      )}
     </div>
   );
 }
