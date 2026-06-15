@@ -1,3 +1,4 @@
+import type { JourneyKumeVariant } from "@/components/kume/JourneyKume";
 import type { KumeEmotion } from "@/components/kume/tokens";
 import type { Region } from "@/lib/types";
 import { getPlayableRegion, isRegionComplete, isRegionUnlocked, regions } from "@/lib/data/regions";
@@ -11,7 +12,7 @@ type BannerContext = {
 
 export function getJourneyBanner(context: BannerContext): {
   message: string;
-  emotion: KumeEmotion;
+  variant: JourneyKumeVariant;
 } {
   const { playableRegion, currentRegion, isLessonCompleted, streak } = context;
 
@@ -25,40 +26,40 @@ export function getJourneyBanner(context: BannerContext): {
       if (next) {
         return {
           message: `¡Welu! ${lastComplete.name} quedó atrás. ${next.name} nos espera: ${next.topic}.`,
-          emotion: "proud",
+          variant: "happy",
         };
       }
     }
     return {
       message: "Cada palabra te acerca más al Wallmapu. Küme camina contigo.",
-      emotion: "happy",
+      variant: "happy",
     };
   }
 
   if (playableRegion.order === 1 && !isRegionComplete("arica", isLessonCompleted)) {
     return {
       message: "Mari mari. Empezamos el viaje en Arica.",
-      emotion: "excited",
+      variant: "excited",
     };
   }
 
   if (streak >= 7) {
     return {
       message: "Has avanzado hacia el sur. Küme celebra tu racha de viaje.",
-      emotion: "celebrating",
+      variant: "excited",
     };
   }
 
   if (currentRegion && currentRegion.lessons.length === 0 && isRegionUnlocked(currentRegion.id, isLessonCompleted)) {
     return {
       message: `Nueva parada desbloqueada: ${currentRegion.name}. Pronto: ${currentRegion.topic}.`,
-      emotion: "excited",
+      variant: "excited",
     };
   }
 
   return {
     message: playableRegion.theme.kumeWelcome,
-    emotion: "happy",
+    variant: "happy",
   };
 }
 

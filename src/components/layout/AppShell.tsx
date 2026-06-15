@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Kume } from "@/components/kume/Kume";
+import { KumeGame } from "@/components/kume/KumeCharacter";
 import { useProgress } from "@/lib/store/progress";
 
 const tabs = [
@@ -23,7 +23,7 @@ export function TopBar() {
           className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-terracotta/30 bg-cream"
           aria-label="Mochila"
         >
-          <Kume size={40} emotion="happy" animation="idle" />
+          <KumeGame size={40} emotion="happy" action="idle" />
         </Link>
 
         {loaded ? (

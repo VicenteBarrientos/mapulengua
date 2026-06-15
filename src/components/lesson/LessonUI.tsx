@@ -23,20 +23,25 @@ export function LessonFeedbackBar({
         correct ? "border-sage bg-sage/10" : "border-coral bg-coral/10"
       }`}
     >
-      <div className="mx-auto flex max-w-lg items-center gap-3">
-        <KumeFeedback correct={correct} size={56} />
-        <div className="flex-1">
-          <p className={`text-lg font-extrabold ${correct ? "text-sage" : "text-coral"}`}>
-            {correct ? "¡Bien hecho, viajero!" : "Küme te anima a intentar de nuevo"}
+      <div className="mx-auto max-w-lg overflow-visible">
+        <KumeFeedback
+          correct={correct}
+          size={72}
+          message={
+            correct ? "¡Bien hecho, viajero!" : "Küme te anima a intentar de nuevo"
+          }
+        />
+        {correct && xpGained ? (
+          <p className="animate-xp-pop mt-2 text-center text-sm font-bold text-gem">
+            +{xpGained} recuerdos
           </p>
-          {correct && xpGained ? (
-            <p className="animate-xp-pop text-sm font-bold text-gem">+{xpGained} recuerdos</p>
-          ) : (
-            explanation && (
-              <p className="text-xs font-medium text-earth-muted">{explanation}</p>
-            )
-          )}
-        </div>
+        ) : (
+          explanation && (
+            <p className="mt-2 text-center text-xs font-medium text-earth-muted">
+              {explanation}
+            </p>
+          )
+        )}
       </div>
       <button
         type="button"

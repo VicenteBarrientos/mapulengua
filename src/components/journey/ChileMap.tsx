@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import type { Region } from "@/lib/types";
-import type { KumeEmotion } from "@/components/kume/tokens";
+import type { JourneyKumeVariant } from "@/components/kume/JourneyKume";
+import { toJourneyVariant } from "@/components/kume/JourneyKume";
+import { KumeSpeechBubble } from "@/components/kume/KumeSpeechBubble";
 import { getStopKumeEmotion } from "@/lib/kume-messages";
 import { RegionLandscape } from "./RegionLandscape";
-import { Kume } from "@/components/kume/Kume";
+import { KumeHero } from "@/components/kume/KumeHero";
 
 type Props = {
   regions: Region[];
@@ -82,7 +84,7 @@ export function ChileJourneyMap({
       </div>
 
       <div className="mt-8 flex flex-col items-center text-center">
-        <Kume size={88} emotion="happy" animation="idle" className="mb-2" />
+        <KumeHero emotion="happy" animation="float" size={100} className="mb-2" />
         <p className="max-w-xs text-sm font-semibold text-earth-muted">
           Cada parada es una ciudad chilena. Küme te guía hacia el Wallmapu.
         </p>
@@ -164,22 +166,35 @@ function RegionMapCard({
   );
 }
 
+const VARIANT_HERO_ANIM = {
+  happy: "float",
+  excited: "unlock",
+  thinking: "float",
+} as const;
+
 export function KumeTravelBanner({
   message,
-  emotion = "excited",
+  variant = "excited",
 }: {
   message: string;
-  emotion?: KumeEmotion;
+  variant?: JourneyKumeVariant;
 }) {
   return (
-    <div className="mx-4 flex items-center gap-3 rounded-2xl border-2 border-teal/20 bg-gradient-to-r from-sky/20 to-cream px-4 py-3">
-      <Kume size={64} emotion={emotion} animation="wingFlap" />
-      <div>
+    <div className="mx-4 overflow-visible px-1">
+      <KumeSpeechBubble
+        variant="hero"
+        emotion={variant}
+        heroAnimation={VARIANT_HERO_ANIM[variant]}
+        speaking
+        size={88}
+        layout="beside"
+        className="items-end gap-2"
+      >
         <p className="text-[10px] font-extrabold uppercase tracking-widest text-teal">
           Küme, tu guía
         </p>
         <p className="text-sm font-semibold leading-snug text-charcoal">{message}</p>
-      </div>
+      </KumeSpeechBubble>
     </div>
   );
 }
@@ -196,17 +211,23 @@ export function KumeStopGuide({
   isCurrent: boolean;
 }) {
   const emotion = getStopKumeEmotion(region, unlocked, complete, isCurrent);
+  const variant = toJourneyVariant(emotion);
   return (
-    <div className="flex items-start gap-3 rounded-2xl border-2 border-teal/20 bg-white px-4 py-3 shadow-sm">
-      <Kume size={72} emotion={emotion} animation={isCurrent ? "idle" : "none"} />
-      <div>
-        <p className="text-[10px] font-extrabold uppercase tracking-widest text-teal">
-          {region.name} · {region.topic}
-        </p>
-        <p className="text-sm font-semibold leading-snug text-charcoal">
-          {region.theme.kumeWelcome}
-        </p>
-      </div>
-    </div>
+    <KumeSpeechBubble
+      variant="hero"
+      emotion={variant}
+      heroAnimation={isCurrent ? "wave" : VARIANT_HERO_ANIM[variant]}
+      speaking={isCurrent}
+      size={100}
+      layout="beside"
+      className="items-end gap-3 rounded-2xl border-2 border-teal/20 bg-white px-4 py-3 shadow-sm"
+    >
+      <p className="text-[10px] font-extrabold uppercase tracking-widest text-teal">
+        {region.name} · {region.topic}
+      </p>
+      <p className="text-sm font-semibold leading-snug text-charcoal">
+        {region.theme.kumeWelcome}
+      </p>
+    </KumeSpeechBubble>
   );
 }

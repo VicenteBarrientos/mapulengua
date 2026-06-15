@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { KumeGame, type KumeGameProps } from "./KumeCharacter";
+import { KumeHero } from "./KumeHero";
 import type { KumeAnimation, KumeEmotion } from "./tokens";
-import { KUME_SPRITES } from "./tokens";
-
-const DESIGN_GUIDE = "/kume/kume-design-guide.png";
 
 export type KumeProps = {
   size?: number;
   emotion?: KumeEmotion;
   animation?: KumeAnimation;
+  speaking?: boolean;
   className?: string;
-  /** Legacy alias */
+  /** hero = PNG for large moments; game = vector for small UI (default game) */
+  variant?: "hero" | "game";
   mood?: KumeEmotion | "encouraging" | "motivated" | "surprised";
 };
 
@@ -21,19 +21,25 @@ const LEGACY_MOOD: Record<string, KumeEmotion> = {
   surprised: "excited",
 };
 
-const ANIMATION_CLASS: Record<KumeAnimation, string> = {
-  idle: "kume-anim-idle",
-  blink: "kume-anim-blink",
-  wingFlap: "kume-anim-wing",
-  celebrate: "kume-anim-celebrate",
-  heartLoss: "kume-anim-heart-loss",
-  lessonComplete: "kume-anim-lesson-complete",
-  none: "",
+const GAME_ACTION: Partial<Record<KumeAnimation, KumeGameProps["action"]>> = {
+  idle: "idle",
+  blink: "idle",
+  wingFlap: "unlock",
+  celebrate: "celebrate",
+  heartLoss: "heartLoss",
+  lessonComplete: "celebrate",
+  none: "idle",
 };
 
-const EMOTION_FILTER: Partial<Record<KumeEmotion, string>> = {
-  sad: "brightness(0.92) saturate(0.75)",
-};
+const HERO_ANIM = {
+  idle: "float",
+  blink: "float",
+  wingFlap: "wave",
+  celebrate: "celebrate",
+  heartLoss: "heartLoss",
+  lessonComplete: "celebrate",
+  none: "float",
+} as const;
 
 function resolveEmotion(
   emotion?: KumeEmotion,
@@ -45,93 +51,39 @@ function resolveEmotion(
   return "happy";
 }
 
-function resolveAnimation(
-  animation: KumeAnimation | undefined,
-  emotion: KumeEmotion
-): KumeAnimation {
-  if (animation) return animation;
-  if (emotion === "celebrating") return "celebrate";
-  if (emotion === "sad") return "heartLoss";
-  return "idle";
-}
-
-/** Animated Küme — sprites from official design guide */
+/** Unified Küme — routes to Hero (PNG) or Game (vector) */
 export function Kume({
   size = 120,
   emotion,
   animation,
+  speaking,
   mood,
+  variant = "game",
   className = "",
 }: KumeProps) {
   const resolved = resolveEmotion(emotion, mood);
-  const anim = resolveAnimation(animation, resolved);
-  const sprite = KUME_SPRITES[resolved];
-  const blinkSprite = KUME_SPRITES.blink;
-  const [blinking, setBlinking] = useState(false);
+  const anim = animation ?? "idle";
 
-  useEffect(() => {
-    if (anim !== "idle" && anim !== "blink") return;
-    const blink = () => {
-      setBlinking(true);
-      setTimeout(() => setBlinking(false), 120);
-    };
-    const interval = setInterval(blink, 3200 + Math.random() * 2000);
-    return () => clearInterval(interval);
-  }, [anim]);
-
-  const activeSprite = blinking ? blinkSprite : sprite;
-  const animClass = blinking ? "" : ANIMATION_CLASS[anim];
+  if (variant === "hero") {
+    return (
+      <KumeHero
+        emotion={resolved}
+        animation={HERO_ANIM[anim]}
+        speaking={speaking}
+        size={size}
+        className={className}
+      />
+    );
+  }
 
   return (
-    <div
-      role="img"
-      aria-label={`Küme, ${resolved}`}
-      className={`kume-root relative shrink-0 ${animClass} ${className}`}
-      style={{ width: size, height: size }}
-    >
-      <div
-        className="kume-sprite absolute inset-0 bg-no-repeat"
-        style={{
-          backgroundImage: `url(${DESIGN_GUIDE})`,
-          backgroundSize: `${activeSprite.scale * 100}%`,
-          backgroundPosition: `${activeSprite.x} ${activeSprite.y}`,
-          filter: EMOTION_FILTER[resolved],
-        }}
-      />
-      {(resolved === "excited" || resolved === "celebrating") && (
-        <>
-          <span className="kume-sparkle kume-sparkle-a" />
-          <span className="kume-sparkle kume-sparkle-b" />
-        </>
-      )}
-    </div>
-  );
-}
-
-/** Large hero Küme for onboarding / completion screens */
-export function KumeHero({
-  animation = "idle",
-  className = "",
-}: {
-  animation?: KumeAnimation;
-  className?: string;
-}) {
-  const sprite = KUME_SPRITES.hero;
-  return (
-    <div
-      className={`kume-root relative mx-auto h-48 w-48 ${ANIMATION_CLASS[animation]} ${className}`}
-      role="img"
-      aria-label="Küme"
-    >
-      <div
-        className="absolute inset-0 bg-no-repeat"
-        style={{
-          backgroundImage: `url(${DESIGN_GUIDE})`,
-          backgroundSize: `${sprite.scale * 100}%`,
-          backgroundPosition: `${sprite.x} ${sprite.y}`,
-        }}
-      />
-    </div>
+    <KumeGame
+      emotion={resolved}
+      action={GAME_ACTION[anim]}
+      speaking={speaking}
+      size={size}
+      className={className}
+    />
   );
 }
 

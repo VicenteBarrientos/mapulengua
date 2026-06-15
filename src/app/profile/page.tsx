@@ -2,7 +2,7 @@
 
 import { AppShell } from "@/components/layout/AppShell";
 import { XpBar } from "@/components/ui/Stats";
-import { Kume } from "@/components/kume/Kume";
+import { KumeHero } from "@/components/kume/KumeHero";
 import { regions } from "@/lib/data/regions";
 import { useProgress } from "@/lib/store/progress";
 
@@ -17,7 +17,7 @@ export default function ProfilePage() {
     <AppShell>
       <div className="py-6">
         <div className="mb-6 flex flex-col items-center text-center">
-          <Kume size={128} emotion="proud" animation="idle" className="mb-3" />
+          <KumeHero emotion="proud" animation="bounce" size={140} className="mb-3" />
           <h1 className="text-xl font-extrabold text-charcoal">Tu mochila</h1>
           <p className="text-sm text-earth-muted">Viajero del mapudungun</p>
         </div>

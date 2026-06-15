@@ -11,7 +11,7 @@ import {
   LessonFeedbackBar,
   SegmentedProgress,
 } from "@/components/lesson/LessonUI";
-import { Kume } from "@/components/kume/Kume";
+import { KumeHero } from "@/components/kume/KumeHero";
 import { KumeLessonComplete } from "@/components/kume/KumeScenes";
 import { getLesson, getNextLesson } from "@/lib/data/regions";
 import { useProgress } from "@/lib/store/progress";
@@ -144,7 +144,7 @@ export default function LessonPage({
     return (
       <AppShell hideNav>
         <div className="flex min-h-[85dvh] flex-col items-center justify-center px-4 text-center">
-          <Kume size={120} emotion="thinking" animation="idle" className="mb-4" />
+          <KumeHero emotion="thinking" animation="float" size={140} className="mb-4" />
           <h1 className="mb-2 text-xl font-extrabold">Necesitas descansar</h1>
           <p className="mb-6 text-sm text-earth-muted">
             Küme te espera mañana con energía renovada para seguir al sur.

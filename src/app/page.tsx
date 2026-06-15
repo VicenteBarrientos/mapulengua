@@ -104,7 +104,7 @@ export default function HomePage() {
 
       {loaded && (
         <div className="py-4">
-          <KumeTravelBanner message={banner.message} emotion={banner.emotion} />
+          <KumeTravelBanner message={banner.message} variant={banner.variant} />
         </div>
       )}
 

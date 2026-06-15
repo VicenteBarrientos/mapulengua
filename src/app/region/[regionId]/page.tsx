@@ -6,7 +6,7 @@ import { use } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { KumeStopGuide } from "@/components/journey/ChileMap";
 import { RegionLandscape } from "@/components/journey/RegionLandscape";
-import { Kume } from "@/components/kume/Kume";
+import { KumeHero } from "@/components/kume/KumeHero";
 import { getRegion, isRegionComplete, isRegionUnlocked } from "@/lib/data/regions";
 import { useProgress } from "@/lib/store/progress";
 
@@ -74,7 +74,7 @@ export default function RegionPage({
 
         {region.lessons.length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed border-sand-dark bg-sand/30 px-4 py-10 text-center">
-            <Kume size={80} emotion="thinking" animation="idle" className="mx-auto mb-3" />
+            <KumeHero emotion="thinking" animation="float" size={120} className="mx-auto mb-3" />
             <p className="font-bold text-charcoal">Próxima parada del camino</p>
             <p className="mt-1 text-sm text-earth-muted">
               Küme aún prepara las palabras de {region.topic.toLowerCase()}.

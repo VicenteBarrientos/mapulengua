@@ -195,14 +195,419 @@ body {
   animation: xp-pop 0.45s ease-out;
 }
 
-/* ── Küme mascot animations (design guide sprites) ── */
+/* ── Hero Küme (detailed PNG — subtle motion only) ── */
 
-.kume-root {
+.kume-hero {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  background: transparent;
+  line-height: 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
   transform-origin: center bottom;
 }
 
-.kume-sprite {
-  transition: filter 0.2s ease;
+.kume-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Removes off-white PNG background on cream UI */
+  mix-blend-mode: multiply;
+  filter: contrast(1.04) saturate(1.03);
+}
+
+.kume-hero-speaking {
+  animation: kume-hero-speak 0.35s ease-in-out infinite;
+}
+
+@keyframes kume-hero-speak {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.kume-hero-act-float {
+  animation: kume-hero-float 3.4s ease-in-out infinite;
+}
+
+@keyframes kume-hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.kume-hero-act-bounce {
+  animation: kume-hero-bounce 2s ease-in-out infinite;
+}
+
+@keyframes kume-hero-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.03);
+  }
+}
+
+.kume-hero-act-wave {
+  animation: kume-hero-float 3.2s ease-in-out infinite, kume-hero-wave 1.4s ease-in-out infinite;
+}
+
+@keyframes kume-hero-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg) translateY(-4px);
+  }
+  75% {
+    transform: rotate(2deg) translateY(-6px);
+  }
+}
+
+.kume-hero-act-celebrate {
+  animation: kume-hero-celebrate 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    kume-hero-float 2.8s ease-in-out 0.85s infinite;
+}
+
+@keyframes kume-hero-celebrate {
+  0% {
+    transform: scale(0.9) translateY(10px);
+  }
+  40% {
+    transform: scale(1.08) translateY(-14px) rotate(-2deg);
+  }
+  70% {
+    transform: scale(1.04) translateY(-8px) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+}
+
+.kume-hero-act-unlock {
+  animation: kume-hero-unlock 0.7s ease-out, kume-hero-float 3s ease-in-out 0.7s infinite;
+}
+
+@keyframes kume-hero-unlock {
+  0% {
+    transform: scale(0.92) rotate(-4deg);
+    opacity: 0.85;
+  }
+  60% {
+    transform: scale(1.06) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.kume-hero-act-heart-loss {
+  animation: kume-hero-heart-loss 0.55s ease-in-out;
+}
+
+@keyframes kume-hero-heart-loss {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-5px) rotate(-3deg);
+  }
+  50% {
+    transform: translateX(5px) rotate(3deg);
+  }
+}
+
+/* ── Game Küme (interactive vector) ── */
+
+.kume-character {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  background: transparent;
+  line-height: 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.kume-character-inner {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: center bottom;
+}
+
+/* Idle: float + breathe */
+.kume-act-idle .kume-character-inner {
+  animation: kume-float 3.2s ease-in-out infinite, kume-breathe 3.6s ease-in-out infinite;
+}
+
+.kume-torso {
+  transform-origin: 100px 168px;
+  animation: kume-breathe-torso 3.6s ease-in-out infinite;
+}
+
+@keyframes kume-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.015);
+  }
+}
+
+@keyframes kume-breathe-torso {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.03);
+  }
+}
+
+/* Wave (onboarding) */
+.kume-act-wave .kume-wing-front {
+  transform-origin: 142px 118px;
+  animation: kume-wave 1.1s ease-in-out infinite;
+}
+
+@keyframes kume-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(-22deg);
+  }
+  60% {
+    transform: rotate(6deg);
+  }
+}
+
+/* Subtle wing flap when excited / unlock */
+.kume-act-unlock .kume-character-inner,
+.kume-wing-flap {
+  animation: kume-float 2.4s ease-in-out infinite;
+}
+
+.kume-act-unlock .kume-wing-front,
+.kume-wing-flap {
+  transform-origin: 142px 118px;
+  animation: kume-wing-flap 0.9s ease-in-out infinite;
+}
+
+@keyframes kume-wing-flap {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-14deg);
+  }
+}
+
+/* Beak talk */
+.kume-beak-lower {
+  transform-origin: 0 0;
+  transition: transform 0.08s ease;
+}
+
+.kume-beak-open {
+  transform: rotate(8deg) translateY(1px);
+}
+
+.kume-beak-talking {
+  animation: kume-beak-talk 0.18s ease-in-out infinite;
+}
+
+@keyframes kume-beak-talk {
+  0%,
+  100% {
+    transform: rotate(4deg);
+  }
+  50% {
+    transform: rotate(14deg) translateY(2px);
+  }
+}
+
+/* Thinking pose */
+.kume-emotion-thinking .kume-head-thinking {
+  transform-origin: 100px 88px;
+  animation: kume-head-think 2.8s ease-in-out infinite;
+}
+
+.kume-wing-thinking {
+  transform-origin: 38px 128px;
+  animation: kume-wing-think 2.8s ease-in-out infinite;
+}
+
+@keyframes kume-head-think {
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-6deg) translateY(-2px);
+  }
+}
+
+@keyframes kume-wing-think {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(18deg) translate(-4px, -8px);
+  }
+}
+
+/* Sad */
+.kume-emotion-sad .kume-character-inner {
+  animation: kume-float-sad 4s ease-in-out infinite;
+}
+
+.kume-head-sad {
+  transform: rotate(-5deg) translateY(3px);
+}
+
+@keyframes kume-float-sad {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Celebrate / lesson complete */
+.kume-act-celebrate .kume-character-inner {
+  animation: kume-lesson-complete 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    kume-float 2.6s ease-in-out 0.9s infinite;
+}
+
+.kume-act-celebrate .kume-wing-front,
+.kume-act-celebrate .kume-wing-back {
+  animation: kume-celebrate-wings 0.6s ease-out 2;
+}
+
+@keyframes kume-celebrate-wings {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+/* Heart loss */
+.kume-act-heart-loss .kume-character-inner {
+  animation: kume-heart-loss 0.55s ease-in-out;
+}
+
+/* Waiting for input */
+.kume-act-waiting .kume-character-inner {
+  animation: kume-float 3.8s ease-in-out infinite;
+}
+
+/* Speech bubble scene */
+.kume-speech-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: visible;
+}
+
+.kume-speech-beside {
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.kume-bubble-wrap {
+  position: relative;
+  max-width: 100%;
+}
+
+.kume-bubble {
+  position: relative;
+  z-index: 1;
+  border-radius: 1.25rem;
+  border: 2px solid color-mix(in srgb, var(--color-teal) 25%, transparent);
+  background: white;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-charcoal) 8%, transparent);
+  text-align: left;
+}
+
+.kume-bubble-live {
+  animation: kume-bubble-pulse 2s ease-in-out infinite;
+}
+
+@keyframes kume-bubble-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01);
+  }
+}
+
+.kume-bubble-tail {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.kume-bubble-tail-down {
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 12px 10px 0 10px;
+  border-color: white transparent transparent transparent;
+  filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--color-teal) 20%, transparent));
+}
+
+.kume-bubble-tail-left {
+  left: -8px;
+  bottom: 28%;
+  border-width: 8px 10px 8px 0;
+  border-color: transparent white transparent transparent;
+}
+
+.kume-speech-above .kume-bubble-wrap {
+  margin-bottom: 0.25rem;
+}
+
+/* Sparkles inside SVG */
+.kume-sparkle {
+  opacity: 0;
+  animation: kume-sparkle 1.8s ease-in-out infinite;
+}
+
+.kume-sparkle-b {
+  animation-delay: 0.6s;
 }
 
 @keyframes kume-float {
@@ -213,44 +618,6 @@ body {
   50% {
     transform: translateY(-6px);
   }
-}
-
-.kume-anim-idle {
-  animation: kume-float 3.2s ease-in-out infinite;
-}
-
-@keyframes kume-wing {
-  0%,
-  100% {
-    transform: rotate(0deg) translateY(0);
-  }
-  25% {
-    transform: rotate(-2deg) translateY(-2px);
-  }
-  75% {
-    transform: rotate(2deg) translateY(-2px);
-  }
-}
-
-.kume-anim-wing {
-  animation: kume-wing 1.2s ease-in-out infinite;
-}
-
-@keyframes kume-celebrate {
-  0%,
-  100% {
-    transform: scale(1) translateY(0);
-  }
-  30% {
-    transform: scale(1.08) translateY(-8px);
-  }
-  60% {
-    transform: scale(1.04) translateY(-4px);
-  }
-}
-
-.kume-anim-celebrate {
-  animation: kume-celebrate 0.6s ease-out;
 }
 
 @keyframes kume-lesson-complete {
@@ -270,50 +637,20 @@ body {
   }
 }
 
-.kume-anim-lesson-complete {
-  animation: kume-lesson-complete 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
 @keyframes kume-heart-loss {
   0%,
   100% {
     transform: translateX(0) rotate(0deg);
   }
   20% {
-    transform: translateX(-3px) rotate(-2deg);
+    transform: translateX(-4px) rotate(-3deg);
   }
   40% {
-    transform: translateX(3px) rotate(2deg);
+    transform: translateX(4px) rotate(3deg);
   }
   60% {
     transform: translateX(-2px) rotate(-1deg);
   }
-}
-
-.kume-anim-heart-loss {
-  animation: kume-heart-loss 0.5s ease-in-out;
-}
-
-.kume-sparkle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-gem);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.kume-sparkle-a {
-  top: 18%;
-  right: 12%;
-  animation: kume-sparkle 1.8s ease-in-out infinite;
-}
-
-.kume-sparkle-b {
-  top: 28%;
-  left: 8%;
-  animation: kume-sparkle 1.8s ease-in-out 0.6s infinite;
 }
 
 @keyframes kume-sparkle {

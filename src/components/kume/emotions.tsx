@@ -1,27 +1,27 @@
-import { Kume, type KumeProps } from "./Kume";
+import { KumeGame, type KumeGameProps } from "./KumeCharacter";
 
-type EmotionProps = Omit<KumeProps, "emotion" | "mood">;
+type Props = Omit<KumeGameProps, "emotion">;
 
-export function KumeHappy(props: EmotionProps) {
-  return <Kume emotion="happy" animation="idle" {...props} />;
+export function KumeHappy(props: Props) {
+  return <KumeGame emotion="happy" action="idle" {...props} />;
 }
 
-export function KumeExcited(props: EmotionProps) {
-  return <Kume emotion="excited" animation="wingFlap" {...props} />;
+export function KumeExcited(props: Props) {
+  return <KumeGame emotion="excited" action="unlock" {...props} />;
 }
 
-export function KumeThinking(props: EmotionProps) {
-  return <Kume emotion="thinking" animation="idle" {...props} />;
+export function KumeThinking(props: Props) {
+  return <KumeGame emotion="thinking" action="waiting" {...props} />;
 }
 
-export function KumeProud(props: EmotionProps) {
-  return <Kume emotion="proud" animation="idle" {...props} />;
+export function KumeProud(props: Props) {
+  return <KumeGame emotion="proud" action="idle" {...props} />;
 }
 
-export function KumeSad(props: EmotionProps) {
-  return <Kume emotion="sad" animation="heartLoss" {...props} />;
+export function KumeSad(props: Props) {
+  return <KumeGame emotion="sad" action="heartLoss" {...props} />;
 }
 
-export function KumeCelebrating(props: EmotionProps) {
-  return <Kume emotion="celebrating" animation="celebrate" {...props} />;
+export function KumeCelebrating(props: Props) {
+  return <KumeGame emotion="celebrating" action="celebrate" {...props} />;
 }

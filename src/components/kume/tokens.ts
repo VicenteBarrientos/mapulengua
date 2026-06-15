@@ -1,21 +1,24 @@
-/** Küme design bible — extracted from kume-design-guide.png */
+/** Küme design tokens — colors, proportions, personality (internal reference) */
 
 export const KUME_COLORS = {
   feather: "#1a1a1a",
-  featherSoft: "#2d2d2d",
-  neckRuff: "#f5f0e8",
-  beak: "#c4956a",
-  beakDark: "#a67c52",
+  featherSoft: "#2a2a2a",
+  neckRuff: "#f5f2e9",
+  neckRuffLight: "#faf8f3",
+  beak: "#e5b169",
+  beakLight: "#f0c882",
+  beakDark: "#c4956a",
+  wingTip: "#f5f2e9",
   talon: "#1a1a1a",
-  poncho: "#c8542a",
-  ponchoDark: "#a8431f",
-  ponchoBorder: "#f5f0e8",
+  poncho: "#b33a27",
+  ponchoDark: "#8f2e1f",
+  ponchoBorder: "#f5f2e9",
   ponchoPattern: "#1a1a1a",
-  trarilonko: "#c8542a",
-  medallion: "#b8860b",
+  trarilonko: "#1a1a1a",
+  medallion: "#c5944e",
   medallionInner: "#d4a853",
   eyeWhite: "#faf6f0",
-  eyeBrown: "#5c3d2e",
+  eyeBrown: "#6b4423",
   eyeHighlight: "#ffffff",
   cheek: "#c8542a",
   sparkle: "#d4a853",
@@ -57,21 +60,6 @@ export type KumeAnimation =
   | "heartLoss"
   | "lessonComplete"
   | "none";
-
-/** Sprite crops on /kume/kume-design-guide.png (% position, scale multiplier) */
-export const KUME_SPRITES: Record<
-  KumeEmotion | "hero" | "blink",
-  { x: string; y: string; scale: number }
-> = {
-  hero: { x: "11%", y: "42%", scale: 5.4 },
-  happy: { x: "43%", y: "24%", scale: 7.8 },
-  excited: { x: "57%", y: "24%", scale: 7.8 },
-  thinking: { x: "43%", y: "38%", scale: 7.8 },
-  proud: { x: "71%", y: "38%", scale: 7.8 },
-  sad: { x: "43%", y: "38%", scale: 7.8 },
-  celebrating: { x: "57%", y: "38%", scale: 7.8 },
-  blink: { x: "71%", y: "38%", scale: 7.8 },
-};
 
 export const EMOTION_LABELS: Record<KumeEmotion, string> = {
   happy: "Feliz",
