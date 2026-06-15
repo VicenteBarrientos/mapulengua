@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { KumeGame, type KumeGameProps } from "./KumeCharacter";
 import { KumeHero } from "./KumeHero";
@@ -51,7 +51,7 @@ function resolveEmotion(
   return "happy";
 }
 
-/** Unified Küme — routes to Hero (PNG) or Game (vector) */
+/** Unified Pudu — routes to Hero (PNG) or Game (vector) */
 export function Kume({
   size = 120,
   emotion,

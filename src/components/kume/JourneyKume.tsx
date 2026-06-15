@@ -1,4 +1,4 @@
-import { KumeGame } from "./KumeCharacter";
+﻿import { KumeGame } from "./KumeCharacter";
 import { KumeHero } from "./KumeHero";
 import { KumeHappy, KumeExcited, KumeThinking } from "./emotions";
 
@@ -13,7 +13,7 @@ type Props = {
   mode?: "hero" | "game";
 };
 
-/** Journey Küme — Hero on map/banners, Game when compact */
+/** Journey Pudu — Hero on map/banners, Game when compact */
 export function JourneyKume({
   variant,
   size = 64,

@@ -1,4 +1,4 @@
-import type { Lesson } from "../../types";
+﻿import type { Lesson } from "../../types";
 
 const M = {
   source: "seed" as const,
@@ -20,7 +20,7 @@ export const aricaSaludosLessons: Lesson[] = [
       {
         type: "multiple-choice",
         id: "g1-e1",
-        instruction: "Küme te presenta",
+        instruction: "Pudu te presenta",
         prompt: "Mari mari",
         promptLang: "arn",
         phase: "intro",
@@ -103,7 +103,7 @@ export const aricaSaludosLessons: Lesson[] = [
       {
         type: "multiple-choice",
         id: "g2-e1",
-        instruction: "Küme te presenta",
+        instruction: "Pudu te presenta",
         prompt: "Amulepe",
         promptLang: "arn",
         phase: "intro",
@@ -175,8 +175,8 @@ export const aricaSaludosLessons: Lesson[] = [
       {
         type: "multiple-choice",
         id: "g3-e1",
-        instruction: "Küme te presenta",
-        prompt: "Küme ta iñche",
+        instruction: "Pudu te presenta",
+        prompt: "Pudu ta iñche",
         promptLang: "arn",
         phase: "intro",
         options: ["Estoy bien", "Me llamo", "Hola", "Gracias"],
@@ -189,7 +189,7 @@ export const aricaSaludosLessons: Lesson[] = [
         instruction: "Elige la respuesta",
         prompt: "¿Cómo estás?",
         promptLang: "es",
-        options: ["¿Küme ta iñche?", "Iney ta iñche", "¿Eymi?", "Amulepe"],
+        options: ["¿Pudu ta iñche?", "Iney ta iñche", "¿Eymi?", "Amulepe"],
         correctIndex: 0,
         meta: M,
       },
@@ -197,7 +197,7 @@ export const aricaSaludosLessons: Lesson[] = [
         type: "listening",
         id: "g3-e3",
         instruction: "Escucha",
-        audioText: "Küme ta iñche",
+        audioText: "Pudu ta iñche",
         audioLang: "arn",
         options: ["Estoy bien", "Me llamo", "¿Y tú?", "Gracias"],
         correctIndex: 0,
@@ -208,7 +208,7 @@ export const aricaSaludosLessons: Lesson[] = [
         id: "g3-e4",
         instruction: "Une las señales",
         pairs: [
-          { id: "p1", left: "¿Cómo estás?", right: "¿Küme ta iñche?" },
+          { id: "p1", left: "¿Cómo estás?", right: "¿Pudu ta iñche?" },
           { id: "p2", left: "¿Y tú?", right: "¿Eymi?" },
         ],
         meta: M,

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { KumeEmotion } from "./tokens";
 import { EMOTION_LABELS } from "./tokens";
@@ -48,7 +48,7 @@ function defaultAction(emotion: KumeEmotion): KumeAction {
   }
 }
 
-/** Game Küme — interactive vector for small in-lesson reactions */
+/** Game Pudu — interactive vector for small in-lesson reactions */
 export function KumeGame({
   emotion = "happy",
   size = 72,
@@ -67,7 +67,7 @@ export function KumeGame({
   return (
     <div
       role="img"
-      aria-label={`Küme, ${EMOTION_LABELS[emotion]}`}
+      aria-label={`Pudu, ${EMOTION_LABELS[emotion]}`}
       data-emotion={emotion}
       data-action={resolvedAction}
       className={`kume-character kume-game ${ACTION_CLASS[resolvedAction]} kume-emotion-${emotion}${navAvatar ? " kume-nav-avatar" : ""}${microFlap ? " kume-nav-micro-flap" : ""} ${className}`}

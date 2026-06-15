@@ -8,19 +8,19 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants = {
   primary:
-    "bg-terracotta text-white hover:bg-terracotta-dark active:scale-[0.98] shadow-md shadow-terracotta/20",
+    "bg-terracotta text-white hover:bg-terracotta-dark active:scale-[0.98] active:shadow-sm shadow-md shadow-terracotta/25",
   secondary:
     "bg-forest text-white hover:bg-forest-light active:scale-[0.98] shadow-md shadow-forest/20",
   outline:
-    "border-2 border-terracotta text-terracotta hover:bg-terracotta/5 active:scale-[0.98]",
-  ghost: "text-terracotta hover:bg-terracotta/5 active:scale-[0.98]",
-  danger: "bg-coral text-white active:scale-[0.98]",
+    "border border-terracotta/60 text-terracotta bg-terracotta/5 hover:bg-terracotta/10 active:scale-[0.98]",
+  ghost: "text-terracotta hover:bg-terracotta/8 active:scale-[0.98]",
+  danger: "bg-coral text-white active:scale-[0.98] shadow-sm shadow-coral/25",
 };
 
 const sizes = {
   sm: "px-3 py-1.5 text-sm rounded-lg",
   md: "px-5 py-2.5 text-base rounded-xl",
-  lg: "px-6 py-3.5 text-lg rounded-xl",
+  lg: "px-6 py-4 text-base rounded-2xl",
 };
 
 export function Button({
@@ -33,7 +33,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 font-semibold transition-all disabled:opacity-50 disabled:pointer-events-none ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 font-extrabold transition-all disabled:opacity-50 disabled:pointer-events-none ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
       {...props}
     >
       {children}
@@ -61,7 +61,7 @@ export function LinkButton({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center justify-center gap-2 font-semibold transition-all ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 font-extrabold transition-all ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
     >
       {children}
     </Link>

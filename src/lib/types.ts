@@ -129,14 +129,51 @@ export type LessonProgress = {
   completedAt?: string;
 };
 
+/** Spaced-repetition flashcard from lesson vocabulary */
+export type ReviewCard = {
+  id: string;
+  arn: string;
+  es: string;
+  lessonId: string;
+  nextReview: string;
+  intervalDays: number;
+  repetitions: number;
+};
+
+export type AchievementId =
+  | "first-lesson"
+  | "arica-complete"
+  | "la-serena-complete"
+  | "valparaiso-complete"
+  | "santiago-complete"
+  | "temuco-complete"
+  | "valdivia-complete"
+  | "osorno-complete"
+  | "chiloe-complete"
+  | "aysen-complete"
+  | "punta-arenas-complete"
+  | "streak-3"
+  | "streak-7"
+  | "review-master"
+  | "word-collector"
+  | "half-journey"
+  | "full-journey";
+
 export type UserProgress = {
   xp: number;
   streak: number;
   lastActiveDate: string;
   hearts: number;
   maxHearts: number;
+  lastHeartRefillDate: string;
+  weekStart: string;
+  weeklyXp: number;
+  reviewCorrect: number;
+  review: ReviewCard[];
+  achievements: AchievementId[];
   lessons: Record<string, LessonProgress>;
 };
 
 export const DEFAULT_MAX_HEARTS = 5;
 export const XP_PER_CORRECT = 3;
+export const XP_PER_REVIEW = 2;

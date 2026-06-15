@@ -1,6 +1,7 @@
 {
   "name": "mapulengua",
   "version": "0.1.0",
+  "description": "Aprende mapudungun viajando por Chile con Pudu",
   "private": true,
   "scripts": {
     "dev": "next dev",

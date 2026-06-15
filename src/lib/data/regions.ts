@@ -1,5 +1,14 @@
 import type { Region } from "../types";
 import { aricaSaludosLessons } from "./lessons/arica-saludos";
+import { laSerenaNumerosLessons } from "./lessons/la-serena-numeros";
+import { valparaisoFamiliaLessons } from "./lessons/valparaiso-familia";
+import { santiagoComidaLessons } from "./lessons/santiago-comida";
+import { temucoNaturalezaLessons } from "./lessons/temuco-naturaleza";
+import { valdiviaAnimalesLessons } from "./lessons/valdivia-animales";
+import { osornoCasaLessons } from "./lessons/osorno-casa";
+import { chiloeRelatosLessons } from "./lessons/chiloe-relatos";
+import { aysenClimaLessons } from "./lessons/aysen-clima";
+import { puntaArenasRepasoLessons } from "./lessons/punta-arenas-repaso";
 
 const M = {
   source: "seed" as const,
@@ -45,7 +54,7 @@ export const regions: Region[] = [
         "Has avanzado hacia el sur. Pronto contaremos en mapudungun bajo el cielo de La Serena.",
     },
     meta: M,
-    lessons: [],
+    lessons: laSerenaNumerosLessons,
   },
   {
     id: "valparaiso",
@@ -64,7 +73,7 @@ export const regions: Region[] = [
         "Nueva parada desbloqueada. En el puerto aprenderemos palabras de familia y hogar.",
     },
     meta: M,
-    lessons: [],
+    lessons: valparaisoFamiliaLessons,
   },
   {
     id: "santiago",
@@ -83,7 +92,7 @@ export const regions: Region[] = [
         "Cada palabra te acerca más al Wallmapu. En Santiago probaremos vocabulario de la mesa.",
     },
     meta: M,
-    lessons: [],
+    lessons: santiagoComidaLessons,
   },
   {
     id: "temuco",
@@ -99,10 +108,10 @@ export const regions: Region[] = [
       accent: "#344e41",
       culturalElement: "Araucarias y kultrun",
       kumeWelcome:
-        "Aquí la lengua vive en cada fogón. Küme te espera entre bosques y tradición.",
+        "Aquí la lengua vive en cada fogón. Pudu te espera entre bosques y tradición.",
     },
     meta: M,
-    lessons: [],
+    lessons: temucoNaturalezaLessons,
   },
   {
     id: "valdivia",
@@ -121,7 +130,7 @@ export const regions: Region[] = [
         "Has avanzado hacia el sur. En Valdivia escucharemos los nombres de los animales del bosque.",
     },
     meta: M,
-    lessons: [],
+    lessons: valdiviaAnimalesLessons,
   },
   {
     id: "osorno",
@@ -140,7 +149,7 @@ export const regions: Region[] = [
         "Nueva parada desbloqueada. Aprenderemos palabras del hogar y la vida cotidiana.",
     },
     meta: M,
-    lessons: [],
+    lessons: osornoCasaLessons,
   },
   {
     id: "chiloe",
@@ -156,10 +165,10 @@ export const regions: Region[] = [
       accent: "#1d3557",
       culturalElement: "Palafitos y lichen",
       kumeWelcome:
-        "El archipiélago guarda historias. Küme te contará relatos en mapudungun.",
+        "El archipiélago guarda historias. Pudu te contará relatos en mapudungun.",
     },
     meta: M,
-    lessons: [],
+    lessons: chiloeRelatosLessons,
   },
   {
     id: "aysen",
@@ -178,7 +187,7 @@ export const regions: Region[] = [
         "Cada palabra te acerca más al Wallmapu. Aquí hablamos del clima y la tierra.",
     },
     meta: M,
-    lessons: [],
+    lessons: aysenClimaLessons,
   },
   {
     id: "punta-arenas",
@@ -194,10 +203,10 @@ export const regions: Region[] = [
       accent: "#495057",
       culturalElement: "Estrecho de Magallanes",
       kumeWelcome:
-        "Llegamos al sur profundo. Repasaremos todo lo aprendido en el viaje con Küme.",
+        "Llegamos al sur profundo. Repasaremos todo lo aprendido en el viaje con Pudu.",
     },
     meta: M,
-    lessons: [],
+    lessons: puntaArenasRepasoLessons,
   },
 ];
 

@@ -48,7 +48,11 @@ export function ChileJourneyMap({
           const offset = i % 2 === 0 ? "mr-auto pl-2" : "ml-auto pr-2";
 
           return (
-            <div key={region.id} className={`relative w-[88%] ${offset}`}>
+            <div
+              key={region.id}
+              className={`relative w-[88%] ${offset} animate-stagger`}
+              style={{ animationDelay: `${i * 55}ms` }}
+            >
               <div
                 className={`absolute top-8 z-10 h-4 w-4 rounded-full border-2 ${
                   complete
@@ -86,7 +90,7 @@ export function ChileJourneyMap({
       <div className="mt-8 flex flex-col items-center text-center">
         <KumeHero emotion="happy" animation="float" size={100} className="mb-2" />
         <p className="max-w-xs text-sm font-semibold text-earth-muted">
-          Cada parada es una ciudad chilena. Küme te guía hacia el Wallmapu.
+          Cada parada es una ciudad chilena. Pudu te guía hacia el Wallmapu.
         </p>
       </div>
     </div>
@@ -108,45 +112,49 @@ function RegionMapCard({
 
   return (
     <div
-      className={`overflow-hidden rounded-2xl border-2 shadow-md transition-transform active:scale-[0.98] ${
+      className={`overflow-hidden rounded-2xl border shadow-sm transition-all active:scale-[0.98] ${
         locked
-          ? "border-sand-dark/50 opacity-60"
+          ? "border-sand-dark/40 opacity-55"
           : current
-            ? "border-terracotta shadow-terracotta/20"
+            ? "border-terracotta/70 shadow-terracotta/15 shadow-md"
             : complete
-              ? "border-sage/50"
+              ? "border-sage/40"
               : comingSoon
-                ? "border-sand-dark/70"
-                : "border-sand-dark"
+                ? "border-sand-dark/50"
+                : "border-sand-dark/60"
       }`}
     >
-      <div className="relative h-24 overflow-hidden">
+      <div className="relative h-28 overflow-hidden">
         <RegionLandscape kind={region.theme.landscape} className="h-full w-full" />
         {locked && (
-          <div className="absolute inset-0 flex items-center justify-center bg-charcoal/30">
-            <span className="text-3xl">🔒</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-charcoal/40 backdrop-blur-[1px]">
+            <span className="text-3xl drop-shadow">🔒</span>
           </div>
         )}
-        <div className="absolute left-3 top-2 rounded-full bg-terracotta/90 px-2 py-0.5 text-[10px] font-bold text-white">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        <div className="absolute left-3 top-2.5 rounded-full bg-terracotta/95 px-2.5 py-0.5 text-[10px] font-extrabold text-white shadow-sm">
           {region.topic}
         </div>
-        <div className="absolute bottom-2 left-3 rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-bold text-white">
+        {complete && (
+          <div className="absolute right-3 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-sage shadow-sm">
+            <span className="text-xs font-extrabold text-white">✓</span>
+          </div>
+        )}
+        <div className="absolute bottom-2 left-3 text-[10px] font-bold text-white/80 drop-shadow">
           {region.latitude}
         </div>
       </div>
-      <div className="bg-white px-4 py-3">
+      <div className="bg-cream/60 px-4 py-3">
         <div className="flex items-start justify-between gap-2">
           <div>
             <h3 className="font-extrabold text-charcoal">{region.name}</h3>
-            <p className="text-xs text-earth-muted">{region.subtitle}</p>
+            <p className="mt-0.5 text-xs text-earth-muted">{region.subtitle}</p>
           </div>
-          {complete && <span className="text-xl">✓</span>}
           {current && !complete && (
-            <span className="rounded-full bg-terracotta px-2 py-0.5 text-[10px] font-bold text-white">
+            <span className="mt-0.5 rounded-full bg-terracotta px-2.5 py-0.5 text-[10px] font-extrabold text-white">
               Aquí
             </span>
           )}
-          {locked && <span className="text-lg">🔒</span>}
         </div>
         {!locked && region.lessons.length > 0 && (
           <p className="mt-2 text-xs font-bold text-terracotta">
@@ -154,8 +162,8 @@ function RegionMapCard({
           </p>
         )}
         {comingSoon && (
-          <p className="mt-2 text-xs font-semibold text-earth-muted">
-            Próximamente — Küme prepara esta parada
+          <p className="mt-2 text-xs font-medium text-earth-muted">
+            Próximamente — Pudu prepara esta parada
           </p>
         )}
         {locked && (
@@ -191,7 +199,7 @@ export function KumeTravelBanner({
         className="items-end gap-2"
       >
         <p className="text-[10px] font-extrabold uppercase tracking-widest text-teal">
-          Küme, tu guía
+          Pudu, tu guía
         </p>
         <p className="text-sm font-semibold leading-snug text-charcoal">{message}</p>
       </KumeSpeechBubble>

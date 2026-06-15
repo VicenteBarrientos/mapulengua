@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import type { KumeEmotion } from "./tokens";
 import { EMOTION_LABELS } from "./tokens";
+import { KumeSvgArt } from "./KumeSvgArt";
+import { useKumeLife } from "./useKumeLife";
 
 export type KumeHeroAnimation =
   | "idle"
@@ -17,14 +18,10 @@ export type KumeHeroProps = {
   emotion?: KumeEmotion;
   animation?: KumeHeroAnimation;
   size?: number;
-  /** Subtle pulse while Küme is "speaking" (whole-image, not beak parts) */
   speaking?: boolean;
   className?: string;
   priority?: boolean;
 };
-
-const HERO_ASSET = "/kume/kume-transparent.png";
-const ASPECT = 337 / 443;
 
 const ANIM_CLASS: Record<KumeHeroAnimation, string> = {
   idle: "kume-hero-act-float",
@@ -49,39 +46,28 @@ function defaultHeroAnimation(emotion: KumeEmotion): KumeHeroAnimation {
   }
 }
 
-/**
- * Hero Küme — official detailed PNG with subtle CSS motion only.
- * No white box, no card frame; blends into the UI.
- */
+/** Hero Pudu — full SVG character at large display size */
 export function KumeHero({
   emotion = "happy",
   animation,
   size = 160,
   speaking = false,
   className = "",
-  priority = false,
 }: KumeHeroProps) {
   const anim = animation ?? defaultHeroAnimation(emotion);
+  const { blinking, talkFrame } = useKumeLife(speaking, false);
   const height = size;
-  const width = Math.round(size * ASPECT);
+  const width = Math.round(size * 0.84);
 
   return (
     <div
       role="img"
-      aria-label={`Küme, ${EMOTION_LABELS[emotion]}`}
+      aria-label={`Pudu, ${EMOTION_LABELS[emotion]}`}
       data-emotion={emotion}
       className={`kume-hero ${ANIM_CLASS[anim]} ${speaking ? "kume-hero-speaking" : ""} ${className}`}
       style={{ width, height, minWidth: width, minHeight: height }}
     >
-      <Image
-        src={HERO_ASSET}
-        alt=""
-        width={width}
-        height={height}
-        priority={priority || size >= 120}
-        className="kume-hero-img pointer-events-none select-none"
-        draggable={false}
-      />
+      <KumeSvgArt blinking={blinking} talkOpen={speaking && talkFrame} emotion={emotion} />
     </div>
   );
 }

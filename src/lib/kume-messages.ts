@@ -1,6 +1,6 @@
 import type { JourneyKumeVariant } from "@/components/kume/JourneyKume";
 import type { KumeEmotion } from "@/components/kume/tokens";
-import type { Region } from "@/lib/types";
+import type { Region, UserProgress } from "@/lib/types";
 import { getPlayableRegion, isRegionComplete, isRegionUnlocked, regions } from "@/lib/data/regions";
 
 type BannerContext = {
@@ -31,7 +31,7 @@ export function getJourneyBanner(context: BannerContext): {
       }
     }
     return {
-      message: "Cada palabra te acerca más al Wallmapu. Küme camina contigo.",
+      message: "Cada palabra te acerca más al Wallmapu. Pudu camina contigo.",
       variant: "happy",
     };
   }
@@ -45,7 +45,7 @@ export function getJourneyBanner(context: BannerContext): {
 
   if (streak >= 7) {
     return {
-      message: "Has avanzado hacia el sur. Küme celebra tu racha de viaje.",
+      message: "Has avanzado hacia el sur. Pudu celebra tu racha de viaje.",
       variant: "excited",
     };
   }
@@ -80,4 +80,21 @@ export function getPlayableRegionForUser(
   isLessonCompleted: (id: string) => boolean
 ): Region | undefined {
   return getPlayableRegion(isLessonCompleted);
+}
+
+/** Nav avatar mood from journey state — Finch-inspired gentle persistence */
+export function getKumeNavEmotion(progress: UserProgress): KumeEmotion {
+  if (progress.hearts === 0) return "sad";
+  if (progress.streak >= 7) return "celebrating";
+  if (progress.streak >= 3) return "excited";
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  if (progress.lastActiveDate && progress.lastActiveDate !== todayStr) {
+    const last = new Date(progress.lastActiveDate);
+    const now = new Date(todayStr);
+    const diffDays = Math.floor((now.getTime() - last.getTime()) / 86400000);
+    if (diffDays >= 2) return "thinking";
+  }
+
+  return "happy";
 }

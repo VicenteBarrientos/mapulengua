@@ -1,11 +1,38 @@
 {
-  "name": "mapulengua",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  }
+  "name": "Mapulengua — Aprende Mapudungun",
+  "short_name": "Mapulengua",
+  "description": "Viaja por Chile aprendiendo mapudungun con Pudu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf5ee",
+  "theme_color": "#c8542a",
+  "orientation": "portrait",
+  "lang": "es-CL",
+  "categories": ["education", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Continuar viaje",
+      "short_name": "Ruta",
+      "url": "/"
+    },
+    {
+      "name": "Diario de viaje",
+      "short_name": "Diario",
+      "url": "/review"
+    }
+  ]
 }

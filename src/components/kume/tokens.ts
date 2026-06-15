@@ -1,29 +1,29 @@
-/** Küme design tokens — colors, proportions, personality (internal reference) */
+/** Pudu design tokens — from official Pudu mascot design guide */
 
 export const KUME_COLORS = {
-  feather: "#1a1a1a",
-  featherSoft: "#2a2a2a",
-  neckRuff: "#f5f2e9",
-  neckRuffLight: "#faf8f3",
-  beak: "#f0b84a",
-  beakLight: "#f5cc6a",
-  beakDark: "#d9a03a",
-  tongue: "#c44a4a",
-  wingTip: "#f5f2e9",
-  shadow: "#9a9a9a",
-  talon: "#1a1a1a",
-  poncho: "#b33a27",
-  ponchoDark: "#8f2e1f",
-  ponchoBorder: "#f5f2e9",
-  ponchoPattern: "#1a1a1a",
-  trarilonko: "#b33a27",
-  medallion: "#c5944e",
-  medallionInner: "#d4a853",
-  eyeWhite: "#faf6f0",
-  eyeBrown: "#6b4423",
-  eyeHighlight: "#ffffff",
-  cheek: "#c8542a",
-  sparkle: "#d4a853",
+  feather: "#A67C52",        // warm brown — main fur
+  featherSoft: "#7A5030",    // mid brown
+  neckRuff: "#F5E9D6",       // cream belly/muzzle
+  neckRuffLight: "#FAF3EA",  // lighter cream
+  beak: "#F2C94C",           // gold (kultrun)
+  beakLight: "#F5D66A",      // lighter gold
+  beakDark: "#D4A832",       // dark gold
+  tongue: "#C98070",         // ear pink / blush
+  wingTip: "#F5E9D6",        // cream spots
+  shadow: "#9A9A9A",
+  talon: "#4B2E1E",          // dark hooves
+  poncho: "#E24A2B",         // vibrant red — headband + bandana
+  ponchoDark: "#BF3820",     // dark red — kultrun lines
+  ponchoBorder: "#F5E9D6",   // cream — headband diamonds
+  ponchoPattern: "#4B2E1E",  // dark brown
+  trarilonko: "#E24A2B",     // headband red
+  medallion: "#F2C94C",      // kultrun gold
+  medallionInner: "#F5D66A",
+  eyeWhite: "#FFFFFF",
+  eyeBrown: "#1A0A00",       // very dark eyes
+  eyeHighlight: "#FFFFFF",
+  cheek: "#E24A2B",
+  sparkle: "#F2C94C",
 } as const;
 
 /** Head ≈ 35% of total height; body pear-shaped; wings as arms */

@@ -1,72 +1,161 @@
 /**
- * Game sound manager — tries /public/sounds/*.mp3 first, falls back to Web Audio.
- * Add real audio files to public/sounds/ to replace procedural placeholders.
+ * Mapulengua sound system.
+ * Tries /public/sounds/*.mp3 first; falls back to Web Audio synthesis.
+ * Synthesis target: vibraphone-quality pings for success, warm thunks for wrong.
  */
 
 export const SOUND_PATHS = {
   correct: "/sounds/correct.mp3",
   wrong: "/sounds/wrong.mp3",
-  xp: "/sounds/xp.mp3",
   heartLost: "/sounds/heart-lost.mp3",
   lessonComplete: "/sounds/lesson-complete.mp3",
   regionUnlock: "/sounds/region-unlock.mp3",
+  achievement: "/sounds/achievement.mp3",
+  streak: "/sounds/streak.mp3",
   tap: "/sounds/tap.mp3",
+  reviewReveal: "/sounds/review-reveal.mp3",
 } as const;
 
 type SoundKey = keyof typeof SOUND_PATHS;
 
-const cache = new Map<string, HTMLAudioElement>();
+const audioCache = new Map<string, HTMLAudioElement>();
 const failed = new Set<string>();
+const lastPlayed = new Map<string, number>();
+const DEBOUNCE_MS = 120;
 
 let ctx: AudioContext | null = null;
+let masterOut: GainNode | null = null;
 
-function getCtx(): AudioContext | null {
+function getCtx(): { c: AudioContext; out: GainNode } | null {
   if (typeof window === "undefined") return null;
-  if (!ctx) ctx = new AudioContext();
+  if (!ctx) {
+    ctx = new AudioContext();
+    // Dynamics compressor: keeps loud events from peaking, gives a "produced" feel
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -12;
+    comp.knee.value = 6;
+    comp.ratio.value = 4;
+    comp.attack.value = 0.002;
+    comp.release.value = 0.10;
+    comp.connect(ctx.destination);
+    masterOut = ctx.createGain();
+    masterOut.gain.value = 1.0;
+    masterOut.connect(comp);
+  }
   if (ctx.state === "suspended") void ctx.resume();
-  return ctx;
+  return { c: ctx, out: masterOut! };
 }
 
-function tone(
+// ─── Primitive builders ──────────────────────────────────────────────────────
+
+/**
+ * Vibraphone-like bell ping: percussive 5ms attack, resonant exponential decay,
+ * with an octave harmonic for brightness and ring.
+ */
+function ping(
+  c: AudioContext,
+  out: AudioNode,
   freq: number,
-  duration: number,
-  type: OscillatorType = "sine",
-  volume = 0.15,
-  when = 0
+  when: number,
+  dur: number,
+  vol: number
 ) {
-  const c = getCtx();
-  if (!c) return;
   const osc = c.createOscillator();
-  const gain = c.createGain();
-  osc.type = type;
+  const harmonic = c.createOscillator();
+  const hgain = c.createGain();
+  const env = c.createGain();
+
+  osc.type = "sine";
   osc.frequency.value = freq;
-  gain.gain.setValueAtTime(volume, c.currentTime + when);
-  gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + when + duration);
-  osc.connect(gain);
-  gain.connect(c.destination);
-  osc.start(c.currentTime + when);
-  osc.stop(c.currentTime + when + duration);
+
+  // Octave adds "ring" without changing pitch character
+  harmonic.type = "sine";
+  harmonic.frequency.value = freq * 2;
+  hgain.gain.value = 0.18;
+
+  // Envelope: snap to peak in 5ms, natural resonant decay
+  env.gain.setValueAtTime(0, when);
+  env.gain.linearRampToValueAtTime(vol, when + 0.005);
+  env.gain.setValueAtTime(vol * 0.82, when + 0.022); // short bloom settle
+  env.gain.exponentialRampToValueAtTime(0.0008, when + dur);
+
+  osc.connect(env);
+  harmonic.connect(hgain);
+  hgain.connect(env);
+  env.connect(out);
+
+  osc.start(when);
+  osc.stop(when + dur + 0.06);
+  harmonic.start(when);
+  harmonic.stop(when + dur + 0.06);
 }
 
-function playFile(path: string, volume = 0.5): boolean {
-  if (typeof window === "undefined" || failed.has(path)) return false;
+/**
+ * Warm "thunk" for wrong answers: triangle wave with slight downward pitch droop,
+ * weighted 15ms attack so it feels heavy, not sharp.
+ */
+function thunk(
+  c: AudioContext,
+  out: AudioNode,
+  freq: number,
+  when: number,
+  vol: number
+) {
+  const osc = c.createOscillator();
+  const env = c.createGain();
 
-  let audio = cache.get(path);
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(freq, when);
+  // Slight pitch sag — makes it feel "wrong" and droopy
+  osc.frequency.exponentialRampToValueAtTime(freq * 0.90, when + 0.20);
+
+  env.gain.setValueAtTime(0, when);
+  env.gain.linearRampToValueAtTime(vol, when + 0.016); // weighted, not instant
+  env.gain.exponentialRampToValueAtTime(0.0008, when + 0.24);
+
+  osc.connect(env);
+  env.connect(out);
+  osc.start(when);
+  osc.stop(when + 0.30);
+}
+
+/** Simple sine used for bass note underpinning */
+function bass(
+  c: AudioContext,
+  out: AudioNode,
+  freq: number,
+  when: number,
+  dur: number,
+  vol: number
+) {
+  const osc = c.createOscillator();
+  const env = c.createGain();
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  env.gain.setValueAtTime(0, when);
+  env.gain.linearRampToValueAtTime(vol, when + 0.020);
+  env.gain.exponentialRampToValueAtTime(0.0008, when + dur);
+  osc.connect(env);
+  env.connect(out);
+  osc.start(when);
+  osc.stop(when + dur + 0.06);
+}
+
+// ─── File playback ───────────────────────────────────────────────────────────
+
+function playFile(path: string, volume = 0.55): boolean {
+  if (typeof window === "undefined" || failed.has(path)) return false;
+  let audio = audioCache.get(path);
   if (!audio) {
     audio = new Audio(path);
     audio.preload = "auto";
-    cache.set(path, audio);
+    audioCache.set(path, audio);
   }
-
   try {
     const clip = audio.cloneNode() as HTMLAudioElement;
     clip.volume = volume;
     const p = clip.play();
-    if (p) {
-      void p.catch(() => {
-        failed.add(path);
-      });
-    }
+    if (p) void p.catch(() => { failed.add(path); });
     return true;
   } catch {
     failed.add(path);
@@ -74,86 +163,211 @@ function playFile(path: string, volume = 0.5): boolean {
   }
 }
 
-function play(key: SoundKey, fallback: () => void, volume = 0.5) {
-  const path = SOUND_PATHS[key];
-  const started = playFile(path, volume);
-  if (!started) fallback();
+function debounced(key: string, fallback: () => void, fileKey?: SoundKey, volume = 0.55) {
+  const now = Date.now();
+  if (now - (lastPlayed.get(key) ?? 0) < DEBOUNCE_MS) return;
+  lastPlayed.set(key, now);
+  if (fileKey && playFile(SOUND_PATHS[fileKey], volume)) return;
+  fallback();
 }
 
+// ─── Synthesized sounds ──────────────────────────────────────────────────────
+
 function fallbackCorrect() {
-  tone(523, 0.1, "sine", 0.12, 0);
-  tone(659, 0.1, "sine", 0.12, 0.08);
-  tone(784, 0.15, "sine", 0.14, 0.16);
+  // Bright C major ascending arpeggio: C5 → E5 → G5 → C6
+  // Each note is a vibraphone ping, crescendo through the run
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  ping(c, out, 523.25, t + 0.000, 0.30, 0.20); // C5
+  ping(c, out, 659.25, t + 0.085, 0.30, 0.22); // E5
+  ping(c, out, 783.99, t + 0.162, 0.35, 0.24); // G5
+  ping(c, out, 1046.5, t + 0.232, 0.50, 0.19); // C6 — high shimmer tail
+
+  // G5 lingers under C6 for chord fullness
+  ping(c, out, 783.99, t + 0.235, 0.42, 0.08);
 }
 
 function fallbackWrong() {
-  tone(180, 0.25, "sawtooth", 0.08, 0);
-  tone(140, 0.3, "sawtooth", 0.06, 0.1);
+  // Two descending thunks: Bb3 → G3 (minor third down)
+  // Musically signals "wrong" — classic descending minor
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  thunk(c, out, 233.08, t + 0.000, 0.19); // Bb3
+  thunk(c, out, 196.00, t + 0.145, 0.17); // G3 — heavier, conclusive
 }
 
 function fallbackHeartLost() {
-  tone(400, 0.15, "triangle", 0.1, 0);
-  tone(250, 0.35, "triangle", 0.08, 0.12);
-}
+  // Sad descending minor third: A4 → F#4
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
 
-function fallbackXp() {
-  tone(880, 0.08, "sine", 0.1, 0);
-  tone(1047, 0.12, "sine", 0.12, 0.06);
+  thunk(c, out, 440.00, t + 0.000, 0.14); // A4
+  thunk(c, out, 369.99, t + 0.165, 0.12); // F#4
 }
 
 function fallbackComplete() {
-  [392, 523, 659, 784, 988].forEach((f, i) => tone(f, 0.18, "sine", 0.11, i * 0.1));
+  // G major triumphant fanfare: G4 B4 D5 G5 run, then full chord + shimmer
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  // Ascending run
+  ping(c, out, 392.00, t + 0.000, 0.24, 0.18); // G4
+  ping(c, out, 493.88, t + 0.080, 0.24, 0.20); // B4
+  ping(c, out, 587.33, t + 0.155, 0.26, 0.22); // D5
+  ping(c, out, 783.99, t + 0.225, 0.55, 0.24); // G5 — big hit
+
+  // Full chord rings out together
+  ping(c, out, 783.99, t + 0.345, 0.60, 0.17); // G5
+  ping(c, out, 587.33, t + 0.345, 0.60, 0.13); // D5
+  ping(c, out, 493.88, t + 0.345, 0.60, 0.10); // B4
+
+  // High sparkle
+  ping(c, out, 1568.0, t + 0.375, 0.42, 0.07); // G6
+
+  // Low bass anchors the chord
+  bass(c, out, 196.00, t + 0.230, 0.62, 0.12); // G3
 }
 
 function fallbackUnlock() {
-  tone(440, 0.12, "sine", 0.1, 0);
-  tone(554, 0.12, "sine", 0.1, 0.1);
-  tone(659, 0.2, "sine", 0.12, 0.2);
+  // Bell tower: deep E bell then ascending shimmer cascade
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  bass(c, out, 164.81, t + 0.000, 0.65, 0.12); // E3 bass bell
+  ping(c, out, 659.25, t + 0.040, 0.58, 0.18); // E5
+  ping(c, out, 987.77, t + 0.120, 0.52, 0.15); // B5
+  ping(c, out, 1318.5, t + 0.225, 0.46, 0.11); // E6
+  ping(c, out, 1975.5, t + 0.325, 0.38, 0.07); // B6 sparkle
+}
+
+function fallbackAchievement() {
+  // Grand golden G major chord hit + rising shimmer cascade
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  // Deep bass foundation
+  bass(c, out, 196.00, t + 0.000, 0.70, 0.14); // G3
+
+  // Full chord strikes together
+  ping(c, out, 392.00, t + 0.012, 0.65, 0.16); // G4
+  ping(c, out, 493.88, t + 0.012, 0.65, 0.14); // B4
+  ping(c, out, 587.33, t + 0.012, 0.65, 0.13); // D5
+  ping(c, out, 783.99, t + 0.012, 0.65, 0.15); // G5
+
+  // Shimmer cascade rising up
+  ping(c, out, 1174.7, t + 0.230, 0.48, 0.10); // D6
+  ping(c, out, 1568.0, t + 0.315, 0.42, 0.08); // G6
+  ping(c, out, 1975.5, t + 0.400, 0.36, 0.05); // B6
+}
+
+function fallbackStreak() {
+  // Rapid punchy triple chirp: C5 E5 G5 — quick celebratory burst
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  ping(c, out, 523.25, t + 0.000, 0.18, 0.21); // C5
+  ping(c, out, 659.25, t + 0.058, 0.18, 0.23); // E5
+  ping(c, out, 783.99, t + 0.110, 0.25, 0.25); // G5
+}
+
+function fallbackReviewReveal() {
+  // Gentle "ah-ha": A4 → C#5 (major third up — discovery interval)
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  ping(c, out, 440.00, t + 0.000, 0.22, 0.12); // A4
+  ping(c, out, 554.37, t + 0.095, 0.28, 0.10); // C#5
 }
 
 function fallbackTap() {
-  tone(800, 0.04, "sine", 0.06, 0);
+  // Short sine click — physical confirmation, barely audible
+  const r = getCtx();
+  if (!r) return;
+  const { c, out } = r;
+  const t = c.currentTime;
+
+  const osc = c.createOscillator();
+  const env = c.createGain();
+  osc.type = "sine";
+  osc.frequency.value = 1800;
+  env.gain.setValueAtTime(0.09, t);
+  env.gain.exponentialRampToValueAtTime(0.0008, t + 0.022);
+  osc.connect(env);
+  env.connect(out);
+  osc.start(t);
+  osc.stop(t + 0.030);
 }
 
+// ─── Public API ──────────────────────────────────────────────────────────────
+
+/** Correct answer — bright 4-note ascending arpeggio. Do NOT also call playXp(). */
 export function playSuccess() {
-  play("correct", fallbackCorrect);
+  debounced("correct", fallbackCorrect, "correct");
 }
 
 export function playMistake() {
-  play("wrong", fallbackWrong);
+  debounced("wrong", fallbackWrong, "wrong");
 }
 
 export function playHeartLost() {
-  play("heartLost", fallbackHeartLost);
+  debounced("heartLost", fallbackHeartLost, "heartLost", 0.5);
 }
 
-export function playXp() {
-  play("xp", fallbackXp, 0.45);
-}
+/** No-op — XP shimmer is absorbed into playSuccess(). */
+export function playXp() {}
 
 export function playComplete() {
-  play("lessonComplete", fallbackComplete);
+  debounced("complete", fallbackComplete, "lessonComplete");
 }
 
 export function playUnlock() {
-  play("regionUnlock", fallbackUnlock);
+  debounced("unlock", fallbackUnlock, "regionUnlock");
 }
 
-export function playTap() {
-  play("tap", fallbackTap, 0.35);
+export function playAchievement() {
+  debounced("achievement", fallbackAchievement, "achievement");
 }
 
 export function playStreak() {
-  [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.12, "sine", 0.1, i * 0.07));
+  debounced("streak", fallbackStreak, "streak");
 }
 
-/** Preload sound files in the background (optional) */
+export function playReviewReveal() {
+  debounced("reviewReveal", fallbackReviewReveal, "reviewReveal", 0.4);
+}
+
+export function playTap() {
+  debounced("tap", fallbackTap, "tap", 0.35);
+}
+
 export function preloadSounds() {
-  if (typeof window === "undefined") return;
-  Object.values(SOUND_PATHS).forEach((path) => {
-    const audio = new Audio(path);
-    audio.preload = "auto";
-    audio.addEventListener("error", () => failed.add(path), { once: true });
-    cache.set(path, audio);
-  });
+  // MP3 files are optional — Web Audio synthesis handles all sounds as fallback.
+  // Skipping HTTP preload avoids console 404 noise until actual MP3s are added.
+  // To re-enable: drop *.mp3 files into /public/sounds/ and uncomment below.
+  //
+  // if (typeof window === "undefined") return;
+  // Object.values(SOUND_PATHS).forEach((path) => {
+  //   const audio = new Audio(path);
+  //   audio.preload = "auto";
+  //   audio.addEventListener("error", () => failed.add(path), { once: true });
+  //   audioCache.set(path, audio);
+  // });
 }

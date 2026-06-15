@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4622e"/>
+      <stop offset="100%" stop-color="#a84220"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- Pudu — scaled 1.66x, centered (original viewBox 0 0 200 240) -->
+  <g transform="translate(90,57) scale(1.66)" fill="none">
+
+    <!-- Antlers -->
+    <path d="M84 50 C82 40 76 30 78 18 M78 18 L73 11 M78 18 L83 12" stroke="#4B2E1E" stroke-width="5" stroke-linecap="round"/>
+    <path d="M116 50 C118 40 124 30 122 18 M122 18 L127 11 M122 18 L117 12" stroke="#4B2E1E" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- Ears -->
+    <ellipse cx="64" cy="65" rx="20" ry="26" fill="#A67C52" transform="rotate(-12 64 65)"/>
+    <ellipse cx="64" cy="68" rx="13" ry="18" fill="#C98070" transform="rotate(-12 64 68)"/>
+    <ellipse cx="136" cy="65" rx="20" ry="26" fill="#A67C52" transform="rotate(12 136 65)"/>
+    <ellipse cx="136" cy="68" rx="13" ry="18" fill="#C98070" transform="rotate(12 136 68)"/>
+
+    <!-- Arms -->
+    <path d="M58 118 Q46 134 42 158 Q50 166 57 163 Q68 155 68 132 Q66 118 58 118 Z" fill="#A67C52"/>
+    <ellipse cx="48" cy="161" rx="9" ry="6" fill="#4B2E1E"/>
+    <path d="M142 118 Q154 134 158 158 Q150 166 143 163 Q132 155 132 132 Q134 118 142 118 Z" fill="#A67C52"/>
+    <ellipse cx="152" cy="161" rx="9" ry="6" fill="#4B2E1E"/>
+
+    <!-- Head -->
+    <circle cx="100" cy="74" r="42" fill="#A67C52"/>
+    <ellipse cx="100" cy="52" rx="34" ry="22" fill="#4B2E1E" opacity="0.22"/>
+
+    <!-- Headband with nimin diamonds -->
+    <rect x="60" y="47" width="80" height="15" rx="4" fill="#E24A2B"/>
+    <path d="M66 49 L70 53 L66 57 L62 53 Z" fill="#F5E9D6" opacity="0.92"/>
+    <path d="M77 49 L81 53 L77 57 L73 53 Z" fill="#F5E9D6" opacity="0.92"/>
+    <path d="M89 49 L93 53 L89 57 L85 53 Z" fill="#F5E9D6" opacity="0.92"/>
+    <path d="M100 49 L104 53 L100 57 L96 53 Z" fill="#F5E9D6" opacity="0.92"/>
+    <path d="M111 49 L115 53 L111 57 L107 53 Z" fill="#F5E9D6" opacity="0.92"/>
+    <path d="M123 49 L127 53 L123 57 L119 53 Z" fill="#F5E9D6" opacity="0.92"/>
+    <path d="M134 49 L138 53 L134 57 L130 53 Z" fill="#F5E9D6" opacity="0.92"/>
+
+    <!-- Cream muzzle -->
+    <ellipse cx="100" cy="92" rx="20" ry="14" fill="#F5E9D6"/>
+
+    <!-- Eyes -->
+    <circle cx="82" cy="72" r="15" fill="#1A0A00"/>
+    <circle cx="118" cy="72" r="15" fill="#1A0A00"/>
+    <circle cx="88" cy="66" r="6" fill="#FFFFFF"/>
+    <circle cx="124" cy="66" r="6" fill="#FFFFFF"/>
+    <circle cx="79" cy="76" r="2.5" fill="#FFFFFF" opacity="0.65"/>
+    <circle cx="115" cy="76" r="2.5" fill="#FFFFFF" opacity="0.65"/>
+
+    <!-- Nose -->
+    <ellipse cx="100" cy="90" rx="5" ry="3.5" fill="#1A0A00"/>
+
+    <!-- Smile -->
+    <path d="M93 97 Q100 102 107 97" stroke="#4B2E1E" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Body -->
+    <ellipse cx="100" cy="170" rx="46" ry="46" fill="#A67C52"/>
+    <ellipse cx="100" cy="148" rx="40" ry="20" fill="#4B2E1E" opacity="0.18"/>
+
+    <!-- Cream belly -->
+    <ellipse cx="100" cy="178" rx="28" ry="34" fill="#F5E9D6"/>
+
+    <!-- Bandana/bib -->
+    <path d="M62 116 Q100 110 138 116 L132 152 Q100 158 68 152 Z" fill="#E24A2B"/>
+
+    <!-- Kultrun medallion -->
+    <circle cx="100" cy="132" r="14" fill="#F2C94C"/>
+    <line x1="104" y1="132" x2="112" y2="132" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="103" y1="135" x2="109" y2="141" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="100" y1="136" x2="100" y2="144" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="97"  y1="135" x2="91"  y2="141" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="96"  y1="132" x2="88"  y2="132" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="97"  y1="129" x2="91"  y2="123" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="100" y1="128" x2="100" y2="120" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="103" y1="129" x2="109" y2="123" stroke="#BF3820" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="100" cy="132" r="4" fill="#BF3820"/>
+
+    <!-- White spots -->
+    <circle cx="120" cy="160" r="6.5" fill="#F5E9D6" opacity="0.82"/>
+    <circle cx="131" cy="176" r="5"   fill="#F5E9D6" opacity="0.72"/>
+    <circle cx="77"  cy="165" r="5.5" fill="#F5E9D6" opacity="0.78"/>
+
+    <!-- Legs -->
+    <rect x="82"  y="206" width="13" height="22" rx="6" fill="#4B2E1E"/>
+    <rect x="105" y="206" width="13" height="22" rx="6" fill="#4B2E1E"/>
+    <ellipse cx="88"  cy="228" rx="9" ry="5" fill="#2A1008"/>
+    <ellipse cx="111" cy="228" rx="9" ry="5" fill="#2A1008"/>
+
+  </g>
+</svg>
